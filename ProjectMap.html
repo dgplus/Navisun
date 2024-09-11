@@ -1,8 +1,9 @@
+<!DOCTYPE html>
 <html>
 
 <head>
     <meta charset="utf-8">
-    <title>Map: State Coverage</title>
+    <title>Map: Community Solar Capacity by State | DG+</title>
     <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
     <link href="https://api.mapbox.com/mapbox-gl-js/v2.12.0/mapbox-gl.css" rel="stylesheet">
     <script src="https://api.mapbox.com/mapbox-gl-js/v2.12.0/mapbox-gl.js"></script>
@@ -13,82 +14,21 @@
 </head>
 
 <body>
-    <style>
-        .mapboxgl-popup-content {
-            width: 200px !important;
-        }
-    </style>
     <div id="mapcontainer">
-        <div id="map" class="mapboxgl-map">
-            <div class="mapboxgl-canary" style="visibility: hidden;"></div>
-            <div
-                class="mapboxgl-canvas-container mapboxgl-interactive mapboxgl-touch-drag-pan mapboxgl-touch-zoom-rotate">
-                <canvas class="mapboxgl-canvas" tabindex="0" aria-label="Map" role="region" width="2880" height="654"
-                    style="width: 1440px; height: 327px;"></canvas></div>
-            <div class="mapboxgl-control-container">
-                <div class="mapboxgl-ctrl-top-left"></div>
-                <div class="mapboxgl-ctrl-top-right"></div>
-                <div class="mapboxgl-ctrl-bottom-left">
-                    <div class="mapboxgl-ctrl" style="display: block;"><a class="mapboxgl-ctrl-logo" target="_blank"
-                            rel="noopener nofollow" href="https://www.mapbox.com/" aria-label="Mapbox logo"></a></div>
-                </div>
-                <div class="mapboxgl-ctrl-bottom-right">
-                    <div class="mapboxgl-ctrl mapboxgl-ctrl-attrib"><button class="mapboxgl-ctrl-attrib-button"
-                            type="button" aria-label="Toggle attribution"><span class="mapboxgl-ctrl-icon"
-                                aria-hidden="true" title="Toggle attribution"></span></button>
-                        <div class="mapboxgl-ctrl-attrib-inner" role="list"><a href="https://www.mapbox.com/about/maps/"
-                                target="_blank" title="Mapbox" aria-label="Mapbox">© Mapbox</a> <a
-                                href="https://www.openstreetmap.org/about/" target="_blank" title="OpenStreetMap"
-                                aria-label="OpenStreetMap">© OpenStreetMap</a> <a class="mapbox-improve-map"
-                                href="https://apps.mapbox.com/feedback/?owner=mapbox&amp;id=light-v11&amp;access_token=pk.eyJ1IjoiZGdwbHVzZGVzaWduIiwiYSI6ImNsZTF2bGtuczFwYXYzcnBrYm5xM2VwZHUifQ.bsWl7gNOVYm4-_62gDEjqA#/-99.48/40.92/3.5"
-                                target="_blank" aria-label="Map feedback" rel="noopener nofollow">Improve this map</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+        <div id="map"></div>
         <div class="map-overlay top">
             <div class="map-overlay-inner">
-                <h3>State Coverage</h3>
+                <h3>NaviSun Project Capacity by State</h3>
+                <h4>Kilowatts (kW)</h4>
                 <!-- <label>Layer opacity: <span id="slider-value">100%</span></label>
             <input id="slider" type="range" min="0" max="100" step="0" value="100"> -->
                 <div class="legend-container">
-                    <div id="legend" class="column">
-                        <div class="square-container">
-                            <div class="square"
-                                style="background-color: rgb(0, 72, 168); opacity: 1; border: 1px solid rgb(204, 204, 204);">
-                            </div>
-                            <div class="square-text">Tier 1 (76-100%)</div>
-                        </div>
-                        <div class="square-container">
-                            <div class="square"
-                                style="background-color: rgb(6, 94, 212); opacity: 1; border: 1px solid rgb(204, 204, 204);">
-                            </div>
-                            <div class="square-text">Tier 2 (51-75%)</div>
-                        </div>
-                        <div class="square-container">
-                            <div class="square"
-                                style="background-color: rgb(29, 139, 228); opacity: 1; border: 1px solid rgb(204, 204, 204);">
-                            </div>
-                            <div class="square-text">Tier 3 (26-50%)</div>
-                        </div>
-                        <div class="square-container">
-                            <div class="square"
-                                style="background-color: rgb(117, 211, 239); opacity: 1; border: 1px solid rgb(204, 204, 204);">
-                            </div>
-                            <div class="square-text">Tier 4 (0.1-25%)</div>
-                        </div>
-                        <div class="square-container">
-                            <div class="square"
-                                style="background-color: rgb(211, 211, 211); opacity: 1; border: 1px solid rgb(204, 204, 204);">
-                            </div>
-                            <div class="square-text">No Coverage (0%)</div>
-                        </div>
-                    </div>
+
+                    <div id="legend" class="column"></div>
                 </div>
-                <!-- <label>Borders:
-                    <input id="borders" type="checkbox" checked="">
-                </label> -->
+                <label>Borders:
+                    <input id="borders" type="checkbox" checked>
+                </label>
             </div>
         </div>
         <div id="fullscreen">Full screen</div>
@@ -96,7 +36,7 @@
 
     <script>
         const legendDiv = document.getElementById('legend');
-        // const bordersCheckbox = document.getElementById('borders');
+        const bordersCheckbox = document.getElementById('borders');
         const slider = document.getElementById('slider');
         const sliderValue = document.getElementById('slider-value');
         const layerName = 'states-layer'
@@ -105,8 +45,7 @@
             sprData: []
         }
 
-        mapboxgl.accessToken =
-            'pk.eyJ1IjoiZGdwbHVzZGVzaWduIiwiYSI6ImNsZTF2bGtuczFwYXYzcnBrYm5xM2VwZHUifQ.bsWl7gNOVYm4-_62gDEjqA';
+        mapboxgl.accessToken = 'pk.eyJ1IjoiZGdwbHVzZGVzaWduIiwiYSI6ImNsZTF2bGtuczFwYXYzcnBrYm5xM2VwZHUifQ.bsWl7gNOVYm4-_62gDEjqA';
         const map = new mapboxgl.Map({
             container: 'map', // container ID
             // Choose from Mapbox's core styles, or make your own style with Mapbox Studio
@@ -139,23 +78,30 @@
                 }
             });
 
+
             Promise.all([
-                // d3.csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vQmnSsagiUa4BUj54EnHA9PG_kkRfM0U7vCTpHzilswYIONTr6P2AspBCyPc95O7Oj8HDd7Dbm7ZD1G/pub?gid=1984681308&single=true&output=csv"),
-                d3.csv(
-                    "https://docs.google.com/spreadsheets/d/e/2PACX-1vT_zsl_ENEGp078oZ2dU2wBZTsIccGvHaK75GIM_yNQ_jS421uQe3s-0vOy6ekJnCQPx-yMlI3W3Zdh/pub?gid=1881633725&single=true&output=csv"
-                ),
+                d3.csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vRWkjhMGbmqFTQiTkS9fYH0T9jydBhPGKkBWE-XVrgbNwHn0tgWc9E42NsPFYqaRQ/pub?gid=309868205&single=true&output=csv"),
                 fetch("base/s_22mr22.json").then(data => data.json())
             ]).then(data => {
 
+                console.log('data', data);
                 const [sprData, mapData] = data
                 mainData.sprData.push(...sprData)
                 map.getSource("states").setData(mapData)
+                const avrPrice = sprData.map(d => +d['Capacity']).filter(d => !isNaN(d))
+                const namesSpr = sprData.map(d => d.State)
+                const min = Math.min(...avrPrice)
+                const max = Math.max(...avrPrice)
+                const myColor = d3.scaleLinear().domain([min, max]).range(["#a4c0fe", "#1c63fe"])
+
+                generateLegend(min, max, legendDiv, myColor)
 
                 const filtersArray = []
                 sprData
+                    .filter(d => !isNaN(+d['Capacity']) && +d['Capacity'] > 0)
                     .map(d => {
                         const filter = [
-                            ['==', ['get', "NAME"], d['State Name']], d['Color']
+                            ['==', ['get', "STATE"], d.State], myColor(+d['Capacity'])
                         ]
                         filtersArray.push(...filter)
                     })
@@ -164,57 +110,42 @@
                     ...filtersArray,
                     "transparent"
                 ])
-                map.setPaintProperty(layerName, "fill-opacity", 1)
-
-                // legendDiv.innerHTML = '';
-                // const legend = new Map();
-
-                // mainData.sprData.forEach(d => {
-                //     legend.set(d['Ranking Tier 1'], d['Color'])
-                // })
-                // console.log('legend', legend);
-
-                // legend.forEach((value, key) => {
-
-                //     const div = document.createElement("div")
-                //     div.className = "square-container"
-
-                //     const text = document.createElement("div")
-                //     text.className = "square-text"
-                //     text.innerText = key
-
-                //     const sq = document.createElement("div")
-                //     sq.className = "square"
-                //     sq.style.backgroundColor = value
-                //     sq.style.opacity = 1
-                //     sq.style.border = "1px solid #ccc"
-
-                //     div.appendChild(sq)
-                //     div.appendChild(text)
-
-                //     legendDiv.appendChild(div)
-
-                // })
+                map.setPaintProperty(layerName, "fill-opacity", 0.7)
+                    //map.setPaintProperty(layerName, "fill-outline-color", "white")
+                    //map.setPaintProperty(layerName, "fill-outline-color", "transparent")
             })
 
             map.on("click", layerName, e => {
 
+                const stateISO = e.features[0].properties.STATE
                 const stateName = e.features[0].properties.NAME
-                const popupData = mainData.sprData.find(d => d['State Name'] === stateName)
 
-                console.log('popupData', stateName, popupData);
-                const text = `
-                <h3>${popupData['State Name']}</h3>
-                <div><b>Total Meters</b>: ${popupData['Total Meters']}</div>
-                <div><b>Meters Served</b>: ${popupData['Meters Served']}</div>
-                <div><b>% of Total</b>: ${popupData['% of Total']}</div>
-                <div><b>Tier</b>: ${popupData['Tier']}</div>
-                <div><b>Learn More</b>: <a href="#${popupData['State Name']}">${popupData['State Name']}</a></div>
-                `
+                const res = mainData.sprData
+                    .find(spr => spr.State === stateISO)
+
+                const value = (+res['Capacity']).toLocaleString('en-US', {
+                    style: 'currency',
+                    currency: 'USD',
+                }).replace("$", "")
+
+                const text = res ? `
+                        <div class="popup-main">
+                            <div><b>${stateName}</b></div>
+                            <div> ${value} MW</div >
+                        </div >
+            ` :
+                    `
+            < div class= "popup-main" >
+                            <div><b>${stateName}</b></div>
+                            <div>NO DATA</div>
+                        </div >
+            `
+
                 new mapboxgl.Popup()
                     .setLngLat(e.lngLat)
                     .setHTML(text)
                     .addTo(map);
+
 
             })
             map.on('mouseenter', layerName, () => {
@@ -226,10 +157,10 @@
                 map.getCanvas().style.cursor = '';
             });
 
-            // bordersCheckbox.addEventListener('input', (e) => {
-            //     const val = bordersCheckbox.checked ? "white" : "transparent"
-            //     map.setPaintProperty(layerName, "fill-outline-color", val)
-            // })
+            bordersCheckbox.addEventListener('input', (e) => {
+                const val = bordersCheckbox.checked ? "white" : "transparent"
+                map.setPaintProperty(layerName, "fill-outline-color", val)
+            })
 
             // slider.addEventListener('input', (e) => {
             //     map.setPaintProperty(
@@ -257,44 +188,43 @@
         }
 
 
-        /*
+
         function generateLegend(min, max, legendDiv, colorFunc) {
- 
+
             console.log('min,max', min, max);
             const step = 500
             const stepCount = Math.ceil(max / 500)
             const divs = [...Array(stepCount).keys()].map((d, key) => {
- 
+
                 console.log('key', key, stepCount, (step * key) + step / 2);
                 const val = (1 + step * key).toFixed()
                 const div = document.createElement("div")
                 div.className = "square-container"
- 
+
                 const text = document.createElement("div")
                 text.className = "square-text"
                 text.innerText = (step * (key + 1)) > max ? `${val} + ` : `${val} - ${step * (key + 1)}`
- 
+
                 const sq = document.createElement("div")
                 sq.className = "square"
                 sq.style.backgroundColor = (key + 1) === stepCount ? colorFunc(max) : colorFunc((step * key) + step / 2) //if it is the last square, use max value
                 sq.style.opacity = 0.7
- 
+
                 div.appendChild(sq)
                 div.appendChild(text)
- 
+
                 legendDiv.appendChild(div)
                 return div
             })
+
         }
-        */
+
         function clear(str) {
             // console.log('str', str);
             if (!str) return "";
             return str.replaceAll(/[\,\.]/g, " ").replace(/[\s]{2,}/, " ").trim().toLowerCase()
         }
     </script>
-
-
 
 </body>
 
