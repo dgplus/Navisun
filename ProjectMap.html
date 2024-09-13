@@ -92,7 +92,7 @@
                 const namesSpr = sprData.map(d => d.State)
                 const min = Math.min(...avrPrice)
                 const max = Math.max(...avrPrice)
-                const myColor = d3.scaleLinear().domain([min, max]).range(["#a4c0fe", "#1c63fe"])
+                const myColor = d3.scaleLinear().domain([min, max]).range(["#a4c0fe", "#dbeefc"])
 
                 generateLegend(min, max, legendDiv, myColor)
 
