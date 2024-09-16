@@ -110,7 +110,7 @@
                     ...filtersArray,
                     "transparent"
                 ])
-                map.setPaintProperty(layerName, "fill-opacity", 0.8)
+                map.setPaintProperty(layerName, "fill-opacity", 0.9)
                     //map.setPaintProperty(layerName, "fill-outline-color", "white")
                     //map.setPaintProperty(layerName, "fill-outline-color", "transparent")
             })
@@ -209,7 +209,7 @@
                 const sq = document.createElement("div")
                 sq.className = "square"
                 sq.style.backgroundColor = (key + 1) === stepCount ? colorFunc(max) : colorFunc((step * key) + step / 2) //if it is the last square, use max value
-                sq.style.opacity = 0.7
+                sq.style.opacity = 0.9
 
                 div.appendChild(sq)
                 div.appendChild(text)
