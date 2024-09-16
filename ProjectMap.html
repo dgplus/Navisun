@@ -192,8 +192,9 @@
         function generateLegend(min, max, legendDiv, colorFunc) {
 
             console.log('min,max', min, max);
-            const step = 500
-            const stepCount = Math.ceil(max / 500)
+            const step = 1000
+            const stepCount = Math.ceil(max / 1000
+            )
             const divs = [...Array(stepCount).keys()].map((d, key) => {
 
                 console.log('key', key, stepCount, (step * key) + step / 2);
