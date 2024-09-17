@@ -45,8 +45,7 @@
             sprData: []
         }
 
-        mapboxgl.accessToken =
-            'pk.eyJ1IjoiZGdwbHVzZGVzaWduIiwiYSI6ImNsZTF2bGtuczFwYXYzcnBrYm5xM2VwZHUifQ.bsWl7gNOVYm4-_62gDEjqA';
+        mapboxgl.accessToken = 'pk.eyJ1IjoiZGdwbHVzZGVzaWduIiwiYSI6ImNsZTF2bGtuczFwYXYzcnBrYm5xM2VwZHUifQ.bsWl7gNOVYm4-_62gDEjqA';
         const map = new mapboxgl.Map({
             container: 'map', // container ID
             // Choose from Mapbox's core styles, or make your own style with Mapbox Studio
@@ -81,9 +80,7 @@
 
 
             Promise.all([
-                d3.csv(
-                    "https://docs.google.com/spreadsheets/d/e/2PACX-1vRWkjhMGbmqFTQiTkS9fYH0T9jydBhPGKkBWE-XVrgbNwHn0tgWc9E42NsPFYqaRQ/pub?gid=309868205&single=true&output=csv"
-                    ),
+                d3.csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vRWkjhMGbmqFTQiTkS9fYH0T9jydBhPGKkBWE-XVrgbNwHn0tgWc9E42NsPFYqaRQ/pub?gid=309868205&single=true&output=csv"),
                 fetch("base/s_22mr22.json").then(data => data.json())
             ]).then(data => {
 
@@ -114,36 +111,39 @@
                     "transparent"
                 ])
                 map.setPaintProperty(layerName, "fill-opacity", 0.9)
-                //map.setPaintProperty(layerName, "fill-outline-color", "white")
-                //map.setPaintProperty(layerName, "fill-outline-color", "transparent")
+                    //map.setPaintProperty(layerName, "fill-outline-color", "white")
+                    //map.setPaintProperty(layerName, "fill-outline-color", "transparent")
             })
 
             map.on("click", layerName, e => {
 
-                var coordinates = e.features[0].geometry.coordinates.slice();
-                var description = '<div class="map-popup">';
+                const stateISO = e.features[0].properties.STATE
+                const stateName = e.features[0].properties.NAME
 
-                // Assuming data is an array of project info
-                var projects = sprData;
+                const res = mainData.sprData
+                    .find(spr => spr.State === stateISO)
 
-                description += '<ul>';
-                projects.forEach(function (project) {
-                    description += `<li>${project.name}<br><span>${project.location}</span>`;
-                    description +=
-                        `<div class="capacity-bar" style="width: ${project.capacity}%;"></div></li>`;
-                });
-                description += '</ul></div>';
+                const value = (+res['Capacity']).toLocaleString('en-US', {
+                    style: 'currency',
+                    currency: 'USD',
+                }).replace("$", "")
 
-                // Ensure that if the map is zoomed out such that multiple
-                // copies of the feature are visible, the popup appears
-                // over the copy being pointed to.
-                while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
-                    coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
-                }
+                const text = res ? `
+                        <div class="popup-main">
+                            <div><b>${stateName}</b></div>
+                            <div> ${value} MW</div >
+                        </div >
+            ` :
+                    `
+            < div class= "popup-main" >
+                            <div><b>${stateName}</b></div>
+                            <div>NO DATA</div>
+                        </div >
+            `
 
                 new mapboxgl.Popup()
-                    .setLngLat(coordinates)
-                    .setHTML(description)
+                    .setLngLat(e.lngLat)
+                    .setHTML(text)
                     .addTo(map);
 
 
@@ -193,7 +193,8 @@
 
             console.log('min,max', min, max);
             const step = 1000
-            const stepCount = Math.ceil(max / 1000)
+            const stepCount = Math.ceil(max / 1000
+            )
             const divs = [...Array(stepCount).keys()].map((d, key) => {
 
                 console.log('key', key, stepCount, (step * key) + step / 2);
@@ -207,8 +208,7 @@
 
                 const sq = document.createElement("div")
                 sq.className = "square"
-                sq.style.backgroundColor = (key + 1) === stepCount ? colorFunc(max) : colorFunc((step * key) +
-                    step / 2) //if it is the last square, use max value
+                sq.style.backgroundColor = (key + 1) === stepCount ? colorFunc(max) : colorFunc((step * key) + step / 2) //if it is the last square, use max value
                 sq.style.opacity = 0.9
 
                 div.appendChild(sq)
