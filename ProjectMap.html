@@ -135,8 +135,8 @@
                 let projectListHTML = '';
                 projects.forEach(project => {
                     projectListHTML +=
-                        `<li>${project.ProjectName} - ${project.Capacity} kW</li>`;
-                        `<li>${project.City}, ${project.State}</li>`;
+                        `<li>${project.ProjectName} - ${project.Capacity} kW<br>
+                            ${project.City}, ${project.State}</li>`;
                 });
 
                 const text = projects.length > 0 ? `
