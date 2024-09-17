@@ -83,7 +83,7 @@
             Promise.all([
                 d3.csv(
                     "https://docs.google.com/spreadsheets/d/e/2PACX-1vRWkjhMGbmqFTQiTkS9fYH0T9jydBhPGKkBWE-XVrgbNwHn0tgWc9E42NsPFYqaRQ/pub?gid=309868205&single=true&output=csv"
-                    ),
+                ),
                 fetch("base/s_22mr22.json").then(data => data.json())
             ]).then(data => {
 
@@ -119,26 +119,30 @@
             })
 
             map.on("click", layerName, e => {
-                const stateISO = e.features[0].properties.STATE; // ISO code of the state clicked
-                const stateName = e.features[0].properties.NAME; // Name of the state clicked
+                const stateISO = e.features[0].properties.STATE;
+                const stateName = e.features[0].properties.NAME;
 
-                // Filter data for the selected state and sum the capacities
-                const totalCapacity = mainData.sprData.reduce((acc, spr) => {
-                    if (spr.State === stateISO) {
-                        acc += +spr['Capacity'];
-                    }
-                    return acc;
-                }, 0);
+                // Filter data for the selected state
+                const projects = mainData.sprData.filter(spr => spr.State === stateISO);
 
-                // Format the total capacity number for display
+                // Sum total capacity
+                const totalCapacity = projects.reduce((acc, spr) => acc + +spr['Capacity'], 0);
                 const formattedCapacity = totalCapacity.toLocaleString('en-US', {
-                    maximumFractionDigits: 0 // no decimal places for capacity
+                    maximumFractionDigits: 0
                 });
 
-                const text = totalCapacity > 0 ? `
+                // Construct the project list HTML
+                let projectListHTML = '';
+                projects.forEach(project => {
+                    projectListHTML +=
+                        `<li>${project.ProjectName} - ${project.Capacity} kW</li>`;
+                });
+
+                const text = projects.length > 0 ? `
         <div class="popup-main">
             <div><b>${stateName}</b></div>
             <div>Total Capacity: ${formattedCapacity} kW</div>
+            <ul class="popup-project-list">${projectListHTML}</ul>
         </div>` : `
         <div class="popup-main">
             <div><b>${stateName}</b></div>
@@ -151,6 +155,7 @@
                     .setHTML(text)
                     .addTo(map);
             });
+
 
             map.on('mouseenter', layerName, () => {
                 map.getCanvas().style.cursor = 'pointer';

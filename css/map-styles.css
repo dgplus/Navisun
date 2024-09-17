@@ -108,3 +108,25 @@ h4 {
     margin-bottom: 10px;
     cursor: pointer;
 }
+
+.popup-main {
+    max-height: 300px; /* Maximum height of the popup */
+    overflow-y: auto; /* Enables vertical scrolling if needed */
+    padding: 10px; /* Padding inside the popup */
+    background: white; /* Background color */
+    border-radius: 5px; /* Rounded corners */
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3); /* Shadow for depth */
+    font-family: 'Open Sans', sans-serif; /* Font styling */
+}
+
+.popup-project-list {
+    list-style-type: none; /* Removes default list styling */
+    padding: 0; /* Removes padding */
+    margin-top: 10px; /* Space above the list */
+}
+
+.popup-project-list li {
+    padding: 5px 0; /* Padding for each list item */
+    border-bottom: 1px solid #eee; /* Light line between items */
+    font-size: 14px; /* Font size for list items */
+}
