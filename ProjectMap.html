@@ -45,7 +45,8 @@
             sprData: []
         }
 
-        mapboxgl.accessToken = 'pk.eyJ1IjoiZGdwbHVzZGVzaWduIiwiYSI6ImNsZTF2bGtuczFwYXYzcnBrYm5xM2VwZHUifQ.bsWl7gNOVYm4-_62gDEjqA';
+        mapboxgl.accessToken =
+            'pk.eyJ1IjoiZGdwbHVzZGVzaWduIiwiYSI6ImNsZTF2bGtuczFwYXYzcnBrYm5xM2VwZHUifQ.bsWl7gNOVYm4-_62gDEjqA';
         const map = new mapboxgl.Map({
             container: 'map', // container ID
             // Choose from Mapbox's core styles, or make your own style with Mapbox Studio
@@ -80,7 +81,9 @@
 
 
             Promise.all([
-                d3.csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vRWkjhMGbmqFTQiTkS9fYH0T9jydBhPGKkBWE-XVrgbNwHn0tgWc9E42NsPFYqaRQ/pub?gid=309868205&single=true&output=csv"),
+                d3.csv(
+                    "https://docs.google.com/spreadsheets/d/e/2PACX-1vRWkjhMGbmqFTQiTkS9fYH0T9jydBhPGKkBWE-XVrgbNwHn0tgWc9E42NsPFYqaRQ/pub?gid=309868205&single=true&output=csv"
+                    ),
                 fetch("base/s_22mr22.json").then(data => data.json())
             ]).then(data => {
 
@@ -111,43 +114,44 @@
                     "transparent"
                 ])
                 map.setPaintProperty(layerName, "fill-opacity", 0.9)
-                    //map.setPaintProperty(layerName, "fill-outline-color", "white")
-                    //map.setPaintProperty(layerName, "fill-outline-color", "transparent")
+                //map.setPaintProperty(layerName, "fill-outline-color", "white")
+                //map.setPaintProperty(layerName, "fill-outline-color", "transparent")
             })
 
             map.on("click", layerName, e => {
+                const stateISO = e.features[0].properties.STATE; // ISO code of the state clicked
+                const stateName = e.features[0].properties.NAME; // Name of the state clicked
 
-                const stateISO = e.features[0].properties.STATE
-                const stateName = e.features[0].properties.NAME
+                // Filter data for the selected state and sum the capacities
+                const totalCapacity = mainData.sprData.reduce((acc, spr) => {
+                    if (spr.State === stateISO) {
+                        acc += +spr['Capacity'];
+                    }
+                    return acc;
+                }, 0);
 
-                const res = mainData.sprData
-                    .find(spr => spr.State === stateISO)
+                // Format the total capacity number for display
+                const formattedCapacity = totalCapacity.toLocaleString('en-US', {
+                    maximumFractionDigits: 0 // no decimal places for capacity
+                });
 
-                const value = (+res['Capacity']).toLocaleString('en-US', {
-                    style: 'currency',
-                    currency: 'USD',
-                }).replace("$", "")
+                const text = totalCapacity > 0 ? `
+        <div class="popup-main">
+            <div><b>${stateName}</b></div>
+            <div>Total Capacity: ${formattedCapacity} kW</div>
+        </div>` : `
+        <div class="popup-main">
+            <div><b>${stateName}</b></div>
+            <div>No Data</div>
+        </div>`;
 
-                const text = res ? `
-                        <div class="popup-main">
-                            <div><b>${stateName}</b></div>
-                            <div>Total Capacity: ${value} kW</div >
-                        </div >
-            ` :
-                    `
-            < div class= "popup-main" >
-                            <div><b>${stateName}</b></div>
-                            <div>NO DATA</div>
-                        </div >
-            `
-
+                // Create a new popup at the clicked location with the aggregated content
                 new mapboxgl.Popup()
                     .setLngLat(e.lngLat)
                     .setHTML(text)
                     .addTo(map);
+            });
 
-
-            })
             map.on('mouseenter', layerName, () => {
                 map.getCanvas().style.cursor = 'pointer';
             });
@@ -193,8 +197,7 @@
 
             console.log('min,max', min, max);
             const step = 5000
-            const stepCount = Math.ceil(max / 5000
-            )
+            const stepCount = Math.ceil(max / 5000)
             const divs = [...Array(stepCount).keys()].map((d, key) => {
 
                 console.log('key', key, stepCount, (step * key) + step / 2);
@@ -208,7 +211,8 @@
 
                 const sq = document.createElement("div")
                 sq.className = "square"
-                sq.style.backgroundColor = (key + 1) === stepCount ? colorFunc(max) : colorFunc((step * key) + step / 2) //if it is the last square, use max value
+                sq.style.backgroundColor = (key + 1) === stepCount ? colorFunc(max) : colorFunc((step * key) +
+                    step / 2) //if it is the last square, use max value
                 sq.style.opacity = 0.9
 
                 div.appendChild(sq)
