@@ -11,6 +11,7 @@
     <script src="https://d3js.org/d3.v7.min.js"></script>
     <link href="https://fonts.googleapis.com/css?family=Open+Sans:400,600,300" rel="stylesheet" type="text/css">
     <link rel="stylesheet" href="css/map-styles.css">
+    <img id="locicon" href="base/LocationIcon.png" alt="Blue location pointer icon">
 </head>
 
 <body>
@@ -136,7 +137,7 @@
                 projects.forEach(project => {
                     projectListHTML +=
                         `<li>${project.ProjectName} - ${project.Capacity} kW<br>
-                            ${project.City}, ${project.State}</li>`;
+                            <img id="locicon"> ${project.City}, ${project.State}</li>`;
                 });
 
                 const text = projects.length > 0 ? `
