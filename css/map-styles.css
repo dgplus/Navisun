@@ -111,15 +111,15 @@ h4 {
     width: 350px !important;
 }
 
-.popup-container {
-    font-family: Arial, sans-serif; /* Ensures the font is consistent */
-    background-color: white; /* White background for the popup */
-    border-radius: 10px; /* Rounded corners */
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
-    padding: 15px; /* Spacing inside the popup */
-    width: 250px; /* Fixed width */
-    border: solid 1px #ccc; /* Light grey border */
-}
+/* .popup-container { */
+    /* font-family: Arial, sans-serif; Ensures the font is consistent */
+    /* background-color: white; White background for the popup */
+    /* border-radius: 10px; Rounded corners */
+    /* box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1); Subtle shadow for depth */
+    /* padding: 15px; Spacing inside the popup */
+    /* width: 250px; Fixed width */
+    /* border: solid 1px #ccc; Light grey border */
+/* } */
 
 .popup-header {
     font-size: 18px; /* Larger font size for headers */
@@ -135,7 +135,6 @@ h4 {
     background: white; /* Background color */
     border-radius: 5px; /* Rounded corners */
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3); /* Shadow for depth */
-    font-family: 'Open Sans', sans-serif; /* Font styling */
     border: solid 1px #f9de00; /* Yellow border */
     border-width: medium;
 }
