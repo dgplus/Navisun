@@ -83,9 +83,7 @@ h4 {
 .legend-container {
     margin: 5px 0 5px 0;
 }
-.mapboxgl-popup-content {
-    width: 350px !important;
-}
+
 .checkbox-container {
     display: flex;
     margin-top: 5px;
@@ -107,6 +105,26 @@ h4 {
     padding: 10px;
     margin-bottom: 10px;
     cursor: pointer;
+}
+
+.mapboxgl-popup-content {
+    width: 350px !important;
+}
+
+.popup-container {
+    font-family: Arial, sans-serif; /* Ensures the font is consistent */
+    background-color: white; /* White background for the popup */
+    border-radius: 10px; /* Rounded corners */
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+    padding: 15px; /* Spacing inside the popup */
+    width: 250px; /* Fixed width */
+    border: solid 1px #ccc; /* Light grey border */
+}
+
+.popup-header {
+    font-size: 18px; /* Larger font size for headers */
+    color: #333; /* Dark grey color for text */
+    margin-bottom: 10px; /* Space below the header */
 }
 
 .popup-main {
