@@ -135,7 +135,7 @@
                 let projectListHTML = '';
                 projects.forEach(project => {
                     projectListHTML +=
-                        `<project>${project.ProjectName} - ${project.Capacity.toLocaleString('en-US')} kW</project><br>
+                        `<project>${project.ProjectName} - ${project.Capacity.toLocaleString('en-US')} kW<br></project>
                             <place><img class="icon" src="images/LocationIcon.png" alt="Location:" /> ${project.City}, ${project.State}</place>`;
                 });
 
