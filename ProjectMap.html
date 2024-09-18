@@ -21,7 +21,7 @@
         <div id="map"></div>
         <div class="map-overlay top">
             <div class="map-overlay-inner">
-                <h3>NaviSun Project Capacity by State</h3>
+                <h3>NaviSun Project Capacity</h3>
                 <h4>Kilowatts (kW)</h4>
                 <!-- <label>Layer opacity: <span id="slider-value">100%</span></label>
             <input id="slider" type="range" min="0" max="100" step="0" value="100"> -->
@@ -258,8 +258,8 @@
         function generateLegend(min, max, legendDiv, colorFunc) {
 
             console.log('min,max', min, max);
-            const step = 5000
-            const stepCount = Math.ceil(max / 5000)
+            const step = 3000
+            const stepCount = Math.ceil(max / 3000)
             const divs = [...Array(stepCount).keys()].map((d, key) => {
 
                 console.log('key', key, stepCount, (step * key) + step / 2);
