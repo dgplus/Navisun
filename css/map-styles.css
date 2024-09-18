@@ -132,8 +132,8 @@ h4 {
 
 .popup-header {
     font-size: 18px; /* Larger font size for headers */
-    color: #1b64fe; /* Dark grey color for text */
     margin-bottom: 10px; /* Space below the header */
+    color: #1b64fe; /* Blue color for text */
 }
 
 .popup-project-list {
