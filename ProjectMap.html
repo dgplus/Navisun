@@ -270,6 +270,9 @@
                 const text = document.createElement("div")
                 text.className = "square-text"
                 text.innerText = (step * (key + 1)) > max ? `${val} + ` : `${val} - ${step * (key + 1)}`
+                text.toLocaleString('en-US', {
+                    maximumFractionDigits: 0
+                })
 
                 const sq = document.createElement("div")
                 sq.className = "square"
