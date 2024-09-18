@@ -131,7 +131,7 @@ h4 {
 /* } */
 
 .popup-header {
-    font-family: 'Roboto';
+    font-family: "Roboto";
     font-weight: 500;
     font-size: 18px; /* Larger font size for headers */
     margin-bottom: 5px; /* Space below the header */
@@ -139,7 +139,7 @@ h4 {
 }
 
 .popup-subheader {
-    font-family: 'Roboto';
+    font-family: "Roboto";
     font-weight: 500;
     font-size: 14px; /* Font size for subheader */
     margin-top: 5px; /* Space above the subheader */
@@ -158,7 +158,7 @@ h4 {
 }
 
 .proj-name {
-    font-family: 'Roboto';
+    font-family: "Roboto";
     padding: 5px 0; /* Padding for each list item */
     font-size: 14px; /* Font size for list items */
     margin-bottom: 10px; /* Space below */
@@ -166,7 +166,7 @@ h4 {
 }
 
 .proj-loc {
-    font-family: 'EB Garamond';
+    font-family: "EB Garamond";
     font-weight: 400;
     padding: 5px 0; /* Padding for each list item */
     font-size: 14px; /* Font size for list items */
