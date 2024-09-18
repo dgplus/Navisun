@@ -158,20 +158,62 @@
                     .addTo(map);
             });
 
+            let hoveredStateId = null; // Variable to store the ID of the hovered state
+
             map.on('mouseenter', layerName, (e) => {
-                map.setPaintProperty(layerName, 'fill-opacity', [
-                    'case',
-                    ['==', ['get', 'STATE'], e.features[0].properties.STATE],
-                    0.5, // Set the opacity to 0.5 on hover
-                    0.9 // Set the default opacity to 0.9
-                ]);
+                if (e.features.length > 0) {
+                    if (hoveredStateId !== null) {
+                        // Reset the previously hovered state to the default opacity
+                        map.setFeatureState({
+                            source: 'states',
+                            id: hoveredStateId
+                        }, {
+                            hover: false
+                        });
+                    }
+                    // Get the ID of the currently hovered state and change its opacity
+                    hoveredStateId = e.features[0].id;
+                    map.setFeatureState({
+                        source: 'states',
+                        id: hoveredStateId
+                    }, {
+                        hover: true
+                    });
+                }
                 map.getCanvas().style.cursor = 'pointer';
             });
 
             map.on('mouseleave', layerName, (e) => {
-                map.setPaintProperty(layerName, 'fill-opacity', 0.9); // Reset to original opacity
+                if (hoveredStateId !== null) {
+                    // Reset the hovered state when the mouse leaves
+                    map.setFeatureState({
+                        source: 'states',
+                        id: hoveredStateId
+                    }, {
+                        hover: false
+                    });
+                    hoveredStateId = null; // Reset the hover ID
+                }
                 map.getCanvas().style.cursor = '';
             });
+
+            // Add this layer's feature state to handle fill-opacity on hover
+            map.addLayer({
+                'id': 'states-layer',
+                'type': 'fill',
+                'source': 'states',
+                'paint': {
+                    'fill-color': 'rgba(200, 100, 240, 0.8)', // Default color
+                    'fill-outline-color': 'rgba(255, 255, 255, .5)',
+                    'fill-opacity': [
+                        'case',
+                        ['boolean', ['feature-state', 'hover'], false],
+                        0.5, // Hover opacity
+                        0.9 // Default opacity
+                    ]
+                }
+            });
+
 
 
 
