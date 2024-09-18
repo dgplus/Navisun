@@ -138,9 +138,9 @@
                 let projectListHTML = '';
                 projects.forEach(project => {
                     const formattedProjectCapacity = (+project.Capacity).toLocaleString(
-                    'en-US', {
-                        maximumFractionDigits: 0
-                    });
+                        'en-US', {
+                            maximumFractionDigits: 0
+                        });
 
                     projectListHTML +=
                         `<li>
@@ -271,9 +271,15 @@
                 const div = document.createElement("div")
                 div.className = "square-container"
 
-                const text = document.createElement("div")
-                text.className = "square-text"
-                text.innerText = (step * (key + 1)) > max ? `${val.toLocaleString('en-US')} + ` : `${val.toLocaleString('en-US')} - ${(step * (key + 1)).toLocaleString('en-US')}`
+                const text = document.createElement("div");
+                text.className = "square-text";
+                const startVal = (step * (key + 1)) > max ? val : step * key + 1;
+                const endVal = (step * (key + 1)) > max ? max : step * (key + 1);
+
+                // Add commas to the start and end values using toLocaleString
+                text.innerText = (step * (key + 1)) > max ?
+                    `${startVal.toLocaleString('en-US')} +` :
+                    `${startVal.toLocaleString('en-US')} - ${endVal.toLocaleString('en-US')}`;
 
                 const sq = document.createElement("div")
                 sq.className = "square"
