@@ -136,7 +136,8 @@
                 projects.forEach(project => {
                     projectListHTML +=
                         `<li>${project.ProjectName} - ${project.Capacity} kW<br>
-                            ${project.City}, ${project.State}</li>`;
+                            <img class="icon" src="/media/cc0-images/grapefruit-slice-332-332.jpg"
+                            alt="Location:" />${project.City}, ${project.State}</li>`;
                 });
 
                 const text = projects.length > 0 ? `
