@@ -137,7 +137,8 @@ h4 {
 }
 
 .popup-subheader {
-    font-size: 16px; /* Font size for subheader */
+    font-size: 14px; /* Font size for subheader */
+    margin-top: 5px; /* Space above the subheader */
 }
 
 .popup-project-list {
