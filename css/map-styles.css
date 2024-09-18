@@ -151,18 +151,18 @@ h4 {
     margin-top: 10px; /* Space above the list */
 }
 
-.popup-project-list project {
+.proj-name {
     padding: 5px 0; /* Padding for each list item */
     border-bottom: 1px solid #eee; /* Light line between items */
     font-size: 14px; /* Font size for list items */
     color: #1b64fe; /* Blue color for text */
 }
 
-.popup-project-list place {
+.proj-location {
     padding: 5px 0; /* Padding for each list item */
     border-bottom: 1px solid #eee; /* Light line between items */
     font-size: 14px; /* Font size for list items */
-    color: rgba(0, 0, 0, 0.2); /* Black color for text */
+    color: black; /* Black color for text */
     font-style: italic;
 }
 

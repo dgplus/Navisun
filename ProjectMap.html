@@ -135,8 +135,13 @@
                 let projectListHTML = '';
                 projects.forEach(project => {
                     projectListHTML +=
-                        `<project>${project.ProjectName} - ${project.Capacity.toLocaleString('en-US')} kW<br></project>
-                            <place><img class="icon" src="images/LocationIcon.png" alt="Location:" /> ${project.City}, ${project.State}</place>`;
+                        `<li>
+                            <span class="proj-name">${project.ProjectName} (${project.Capacity} kW)</span><br>
+                            <span class="proj-loc">
+                                <img class="icon" src="images/LocationIcon.png"
+                            alt="Location:" /> ${project.City}, ${project.State}
+                            </span>
+                            </li>`;
                 });
 
                 const text = projects.length > 0 ? `
@@ -274,20 +279,20 @@
             return str.replaceAll(/[\,\.]/g, " ").replace(/[\s]{2,}/, " ").trim().toLowerCase()
         }
 
-           // bordersCheckbox.addEventListener('input', (e) => {
-            //     const val = bordersCheckbox.checked ? "white" : "transparent"
-            //     map.setPaintProperty(layerName, "fill-outline-color", val)
-            // })
+        // bordersCheckbox.addEventListener('input', (e) => {
+        //     const val = bordersCheckbox.checked ? "white" : "transparent"
+        //     map.setPaintProperty(layerName, "fill-outline-color", val)
+        // })
 
-            // slider.addEventListener('input', (e) => {
-            //     map.setPaintProperty(
-            //         layerName,
-            //         'fill-opacity',
-            //         parseInt(e.target.value, 10) / 100
-            //     );
-            //     // Value indicator
-            //     sliderValue.textContent = e.target.value + '%';
-            // });
+        // slider.addEventListener('input', (e) => {
+        //     map.setPaintProperty(
+        //         layerName,
+        //         'fill-opacity',
+        //         parseInt(e.target.value, 10) / 100
+        //     );
+        //     // Value indicator
+        //     sliderValue.textContent = e.target.value + '%';
+        // });
     </script>
 
 </body>
