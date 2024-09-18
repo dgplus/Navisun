@@ -143,20 +143,27 @@ h4 {
     font-weight: 500;
     font-size: 14px; /* Font size for subheader */
     margin-top: 5px; /* Space above the subheader */
-    color: #1b64fe; /* Blue color for text */
 }
 
 .popup-project-list {
     list-style-type: none; /* Removes default list styling */
     padding: 0; /* Removes padding */
     margin-top: 10px; /* Space above the list */
-    font-style: italic;
 }
 
-.popup-project-list li {
+.popup-project-list project {
     padding: 5px 0; /* Padding for each list item */
     border-bottom: 1px solid #eee; /* Light line between items */
     font-size: 14px; /* Font size for list items */
+    color: #1b64fe; /* Blue color for text */
+}
+
+.popup-project-list place {
+    padding: 5px 0; /* Padding for each list item */
+    border-bottom: 1px solid #eee; /* Light line between items */
+    font-size: 14px; /* Font size for list items */
+    color: #1b64fe; /* Blue color for text */
+    font-style: italic;
 }
 
 .icon {
