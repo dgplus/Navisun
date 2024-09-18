@@ -114,9 +114,9 @@ h4 {
     overflow-y: auto; /* Enables vertical scrolling if needed */
     padding: 10px; /* Padding inside the popup */
     background: white; /* Background color */
-    border-radius: 5px; /* Rounded corners */
+    border-radius: 1% 25% 25% 25%; /* Rounded corners */
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3); /* Shadow for depth */
-    border: solid 1px #f9de00; /* Yellow border */
+    border: solid 2px #f9de00; /* Yellow border */
     border-width: medium;
 }
 
