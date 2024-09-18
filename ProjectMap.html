@@ -138,9 +138,9 @@
                 let projectListHTML = '';
                 projects.forEach(project => {
                     const formattedProjectCapacity = (+project.Capacity).toLocaleString(
-                    'en-US', {
-                        maximumFractionDigits: 0
-                    });
+                        'en-US', {
+                            maximumFractionDigits: 0
+                        });
 
                     projectListHTML +=
                         `<li>
@@ -162,8 +162,17 @@
             <div>No projects</div>
         </div>`;
 
+                map.flyTo({
+                    center: e.lngLat,
+                    zoom: map.getZoom(),
+                    speed: 1.2 // Optional: Control the speed of the fly effect
+                });
+
+
                 // Create a new popup at the clicked location with the aggregated content
-                new mapboxgl.Popup()
+                new mapboxgl.Popup({
+                        anchor: 'top-left'
+                    })
                     .setLngLat(e.lngLat)
                     .setHTML(text)
                     .addTo(map);
@@ -250,36 +259,52 @@
             }
         }
 
-        function generateLegend(min, max, legendDiv, colorFunc) {
+        function generateLegend(legendDiv) {
+            const customBins = [{
+                    range: [0, 5000],
+                    color: "#dbeefc"
+                },
+                {
+                    range: [5001, 10000],
+                    color: "#a4c0fe"
+                },
+                {
+                    range: [10001, 20000],
+                    color: "#6994fc"
+                },
+                {
+                    range: [20001, 50000],
+                    color: "#416cfa"
+                },
+                {
+                    range: [50001, Infinity],
+                    color: "#2a4fdc"
+                }
+            ];
 
-            console.log('min,max', min, max);
-            const step = 5000
-            const stepCount = Math.ceil(max / 5000)
-            const divs = [...Array(stepCount).keys()].map((d, key) => {
+            customBins.forEach(bin => {
+                const div = document.createElement("div");
+                div.className = "square-container";
 
-                console.log('key', key, stepCount, (step * key) + step / 2);
-                const val = (1 + step * key).toFixed()
-                const div = document.createElement("div")
-                div.className = "square-container"
+                const text = document.createElement("div");
+                text.className = "square-text";
+                const formattedRange = bin.range[1] === Infinity ?
+                    `${bin.range[0].toLocaleString()}+` :
+                    `${bin.range[0].toLocaleString()} - ${bin.range[1].toLocaleString()}`;
 
-                const text = document.createElement("div")
-                text.className = "square-text"
-                text.innerText = (step * (key + 1)) > max ? `${val} + ` : `${val} - ${step * (key + 1)}`
+                text.innerText = formattedRange;
 
-                const sq = document.createElement("div")
-                sq.className = "square"
-                sq.style.backgroundColor = (key + 1) === stepCount ? colorFunc(max) : colorFunc((step * key) +
-                    step / 2) //if it is the last square, use max value
-                sq.style.opacity = 0.9
+                const sq = document.createElement("div");
+                sq.className = "square";
+                sq.style.backgroundColor = bin.color;
+                sq.style.opacity = 0.9;
 
-                div.appendChild(sq)
-                div.appendChild(text)
-
-                legendDiv.appendChild(div)
-                return div
-            })
-
+                div.appendChild(sq);
+                div.appendChild(text);
+                legendDiv.appendChild(div);
+            });
         }
+
 
         function clear(str) {
             // console.log('str', str);
