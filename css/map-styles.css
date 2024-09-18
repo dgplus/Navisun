@@ -108,7 +108,7 @@ h4 {
 }
 
 .mapboxgl-popup-content {
-    width: 350px !important;
+    width: 250px !important;
     font-family: Arial, sans-serif; /* Ensures the font is consistent */
     max-height: 300px; /* Maximum height of the popup */
     overflow-y: scroll; /* Enables vertical scrolling if needed */
