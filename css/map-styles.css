@@ -159,12 +159,15 @@ h4 {
 }
 
 .proj-name {
+    font-family: 'Roboto';
     padding: 5px 0; /* Padding for each list item */
     font-size: 14px; /* Font size for list items */
     color: #1b64fe; /* Blue color for text */
 }
 
 .proj-loc {
+    font-family: 'EB Garamond';
+    font-weight: 400;
     padding: 5px 0; /* Padding for each list item */
     font-size: 14px; /* Font size for list items */
     color: black; /* Black color for text */
