@@ -83,74 +83,71 @@
             });
 
 
-            map.on('load', () => {
+            Promise.all([
+                d3.csv(
+                    "https://docs.google.com/spreadsheets/d/e/2PACX-1vRWkjhMGbmqFTQiTkS9fYH0T9jydBhPGKkBWE-XVrgbNwHn0tgWc9E42NsPFYqaRQ/pub?gid=309868205&single=true&output=csv"
+                ),
+                fetch("base/s_22mr22.json").then(data => data.json())
+            ]).then(data => {
 
-                // Your other map loading code...
+                console.log('data', data);
+                const [sprData, mapData] = data
+                mainData.sprData.push(...sprData)
+                map.getSource("states").setData(mapData)
+                const avrPrice = sprData.map(d => +d['Capacity']).filter(d => !isNaN(d))
+                const namesSpr = sprData.map(d => d.State)
+                const min = Math.min(...avrPrice)
+                const max = Math.max(...avrPrice)
+                const myColor = d3.scaleLinear().domain([min, max]).range(["#dbeefc", "#a4c0fe"])
 
-                Promise.all([
-                    d3.csv(
-                        "https://docs.google.com/spreadsheets/d/e/2PACX-1vRWkjhMGbmqFTQiTkS9fYH0T9jydBhPGKkBWE-XVrgbNwHn0tgWc9E42NsPFYqaRQ/pub?gid=309868205&single=true&output=csv"
-                        ),
-                    fetch("base/s_22mr22.json").then(data => data.json())
-                ]).then(data => {
-                    const [sprData, mapData] = data;
-                    mainData.sprData.push(...sprData);
-                    map.getSource("states").setData(mapData);
+                generateLegend(min, max, legendDiv, myColor)
 
-                    const filtersArray = [];
-                    sprData
-                        .filter(d => !isNaN(+d['Capacity']) && +d['Capacity'] > 0)
-                        .forEach(d => {
-                            const color = getColorForCapacity(+d['Capacity']);
-                            const filter = [
-                                ['==', ['get', "STATE"], d.State], color
-                            ];
-                            filtersArray.push(...filter);
-                        });
+                const filtersArray = []
+                sprData
+                    .filter(d => !isNaN(+d['Capacity']) && +d['Capacity'] > 0)
+                    .map(d => {
+                        const filter = [
+                            ['==', ['get', "STATE"], d.State], myColor(+d['Capacity'])
+                        ]
+                        filtersArray.push(...filter)
+                    })
+                map.setPaintProperty(layerName, "fill-color", [
+                    'case',
+                    ...filtersArray,
+                    "transparent"
+                ])
+                map.setPaintProperty(layerName, "fill-opacity", 0.9)
+                //map.setPaintProperty(layerName, "fill-outline-color", "white")
+                //map.setPaintProperty(layerName, "fill-outline-color", "transparent")
+            })
 
-                    map.setPaintProperty(layerName, "fill-color", [
-                        'case',
-                        ...filtersArray,
-                        "transparent"
-                    ]);
+            map.on("click", layerName, e => {
+                const stateISO = e.features[0].properties.STATE;
+                const stateName = e.features[0].properties.NAME;
 
-                    map.setPaintProperty(layerName, "fill-opacity", 0.9);
+                // Filter data for the selected state
+                const projects = mainData.sprData.filter(spr => spr.State === stateISO);
 
-                    generateLegend(legendDiv); // Pass the legend div for manual bins
+                // Sum total capacity
+                const totalCapacity = projects.reduce((acc, spr) => acc + +spr['Capacity'], 0);
+                const formattedCapacity = totalCapacity.toLocaleString('en-US', {
+                    maximumFractionDigits: 0
                 });
 
-                map.on("click", layerName, e => {
-                    const stateISO = e.features[0].properties.STATE;
-                    const stateName = e.features[0].properties.NAME;
+                // Construct the project list HTML
+                let projectListHTML = '';
+                projects.forEach(project => {
+                    projectListHTML +=
+                        `<li>
+                            <span class="proj-name">${project.ProjectName} (${project.Capacity} kW)</span><br>
+                            <span class="proj-loc">
+                                <img class="icon" src="images/LocationIcon.png"
+                            alt="Location:" /> ${project.City}, ${project.State}
+                            </span>
+                        </li>`;
+                });
 
-                    // Filter data for the selected state
-                    const projects = mainData.sprData.filter(spr => spr.State === stateISO);
-
-                    // Sum total capacity
-                    const totalCapacity = projects.reduce((acc, spr) => acc + +spr['Capacity'],
-                        0);
-                    const formattedCapacity = totalCapacity.toLocaleString('en-US', {
-                        maximumFractionDigits: 0
-                    });
-
-                    // Construct the project list HTML
-                    let projectListHTML = '';
-                    projects.forEach(project => {
-                        const formattedProjectCapacity = (+project.Capacity)
-                            .toLocaleString('en-US', {
-                                maximumFractionDigits: 0
-                            });
-
-                        projectListHTML +=
-                            `<li>
-                <span class="proj-name">${project.ProjectName} (${formattedProjectCapacity} kW)</span><br>
-                <span class="proj-loc">
-                    <img class="icon" src="images/LocationIcon.png" alt="Location:" /> ${project.City}, ${project.State}
-                </span>
-            </li>`;
-                    });
-
-                    const text = projects.length > 0 ? `
+                const text = projects.length > 0 ? `
         <div class="popup-main">
             <div class="popup-header"><b>${stateName}</b></div>
             <div class="popup-subheader">Total Capacity: ${formattedCapacity} kW</div>
@@ -161,26 +158,12 @@
             <div>No projects</div>
         </div>`;
 
-                    // Center the map on the popup
-                    map.flyTo({
-                        center: e.lngLat,
-                        zoom: map.getZoom(),
-                        speed: 1.2 // Smooth transition
-                    });
-
-                    // Create a new popup at the clicked location with the aggregated content
-                    new mapboxgl.Popup({
-                            anchor: 'top-left'
-                        }) // Set the popup anchor to top-left
-                        .setLngLat(e.lngLat)
-                        .setHTML(text)
-                        .addTo(map);
-                });
-
-                // Your other existing code...
+                // Create a new popup at the clicked location with the aggregated content
+                new mapboxgl.Popup()
+                    .setLngLat(e.lngLat)
+                    .setHTML(text)
+                    .addTo(map);
             });
-
-
 
             let hoveredStateId = null; // Variable to store the ID of the hovered state
 
@@ -262,52 +245,36 @@
             }
         }
 
-        function generateLegend(legendDiv) {
-            const customBins = [{
-                    range: [0, 5000],
-                    color: "#dbeefc"
-                },
-                {
-                    range: [5001, 10000],
-                    color: "#a4c0fe"
-                },
-                {
-                    range: [10001, 20000],
-                    color: "#6994fc"
-                },
-                {
-                    range: [20001, 50000],
-                    color: "#416cfa"
-                },
-                {
-                    range: [50001, Infinity],
-                    color: "#2a4fdc"
-                }
-            ];
+        function generateLegend(min, max, legendDiv, colorFunc) {
 
-            customBins.forEach(bin => {
-                const div = document.createElement("div");
-                div.className = "square-container";
+            console.log('min,max', min, max);
+            const step = 5000
+            const stepCount = Math.ceil(max / 5000)
+            const divs = [...Array(stepCount).keys()].map((d, key) => {
 
-                const text = document.createElement("div");
-                text.className = "square-text";
-                const formattedRange = bin.range[1] === Infinity ?
-                    `${bin.range[0].toLocaleString()}+` :
-                    `${bin.range[0].toLocaleString()} - ${bin.range[1].toLocaleString()}`;
+                console.log('key', key, stepCount, (step * key) + step / 2);
+                const val = (1 + step * key).toFixed()
+                const div = document.createElement("div")
+                div.className = "square-container"
 
-                text.innerText = formattedRange;
+                const text = document.createElement("div")
+                text.className = "square-text"
+                text.innerText = (step * (key + 1)) > max ? `${val} + ` : `${val} - ${step * (key + 1)}`
 
-                const sq = document.createElement("div");
-                sq.className = "square";
-                sq.style.backgroundColor = bin.color;
-                sq.style.opacity = 0.9;
+                const sq = document.createElement("div")
+                sq.className = "square"
+                sq.style.backgroundColor = (key + 1) === stepCount ? colorFunc(max) : colorFunc((step * key) +
+                    step / 2) //if it is the last square, use max value
+                sq.style.opacity = 0.9
 
-                div.appendChild(sq);
-                div.appendChild(text);
-                legendDiv.appendChild(div);
-            });
+                div.appendChild(sq)
+                div.appendChild(text)
+
+                legendDiv.appendChild(div)
+                return div
+            })
+
         }
-
 
         function clear(str) {
             // console.log('str', str);
