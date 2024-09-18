@@ -158,11 +158,21 @@
             <div>No projects</div>
         </div>`;
 
+                map.flyTo({
+                    center: e.lngLat,
+                    zoom: map.getZoom(),
+                    speed: 1.2 // Optional: Control the speed of the fly effect
+                });
+
+
                 // Create a new popup at the clicked location with the aggregated content
-                new mapboxgl.Popup()
+                new mapboxgl.Popup({
+                        anchor: 'top-left'
+                    }) // Set the popup anchor to top-left
                     .setLngLat(e.lngLat)
                     .setHTML(text)
                     .addTo(map);
+
             });
 
             let hoveredStateId = null; // Variable to store the ID of the hovered state
