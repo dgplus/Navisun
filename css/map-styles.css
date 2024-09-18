@@ -111,14 +111,17 @@ h4 {
     width: 350px !important;
     font-family: Arial, sans-serif; /* Ensures the font is consistent */
     max-height: 300px; /* Maximum height of the popup */
-    overflow-y: auto; /* Enables vertical scrolling if needed */
-    scrollbar-color: #f9de00;
+    overflow-y: scroll; /* Enables vertical scrolling if needed */
     padding: 10px; /* Padding inside the popup */
     background: white; /* Background color */
     border-radius: 1px 10px 10px 10px; /* Rounded corners */
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3); /* Shadow for depth */
+    /* box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3); Shadow for depth */
     border: solid 2px #f9de00; /* Yellow border */
     border-width: medium;
+}
+
+.popup-main {
+    scrollbar-color: #f9de00;
 }
 
 /* .popup-container { */
@@ -133,7 +136,7 @@ h4 {
 
 .popup-header {
     font-size: 18px; /* Larger font size for headers */
-    color: #333; /* Dark grey color for text */
+    color: #1b64fe; /* Dark grey color for text */
     margin-bottom: 10px; /* Space below the header */
 }
 
@@ -141,6 +144,7 @@ h4 {
     list-style-type: none; /* Removes default list styling */
     padding: 0; /* Removes padding */
     margin-top: 10px; /* Space above the list */
+    font: italic
 }
 
 .popup-project-list li {
