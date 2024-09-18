@@ -151,16 +151,21 @@ h4 {
     margin-top: 10px; /* Space above the list */
 }
 
+.popup-project-list li {
+    list-style-type: none; /* Removes default list styling */
+    border-bottom: 1px solid #eee; /* Light line between items */
+    padding: 0; /* Removes padding */
+    margin-top: 10px; /* Space above the list */
+}
+
 .proj-name {
     padding: 5px 0; /* Padding for each list item */
-    border-bottom: 1px solid #eee; /* Light line between items */
     font-size: 14px; /* Font size for list items */
     color: #1b64fe; /* Blue color for text */
 }
 
 .proj-location {
     padding: 5px 0; /* Padding for each list item */
-    border-bottom: 1px solid #eee; /* Light line between items */
     font-size: 14px; /* Font size for list items */
     color: black; /* Black color for text */
     font-style: italic;
