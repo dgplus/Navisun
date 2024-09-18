@@ -83,75 +83,74 @@
             });
 
 
-            Promise.all([
-                d3.csv(
-                    "https://docs.google.com/spreadsheets/d/e/2PACX-1vRWkjhMGbmqFTQiTkS9fYH0T9jydBhPGKkBWE-XVrgbNwHn0tgWc9E42NsPFYqaRQ/pub?gid=309868205&single=true&output=csv"
-                ),
-                fetch("base/s_22mr22.json").then(data => data.json())
-            ]).then(data => {
+            map.on('load', () => {
 
-                console.log('data', data);
-                const [sprData, mapData] = data
-                mainData.sprData.push(...sprData)
-                map.getSource("states").setData(mapData)
-                const avrPrice = sprData.map(d => +d['Capacity']).filter(d => !isNaN(d))
-                const namesSpr = sprData.map(d => d.State)
-                const min = Math.min(...avrPrice)
-                const max = Math.max(...avrPrice)
-                const myColor = d3.scaleLinear().domain([min, max]).range(["#dbeefc", "#a4c0fe"])
+                // Your other map loading code...
 
-                generateLegend(min, max, legendDiv, myColor)
+                Promise.all([
+                    d3.csv(
+                        "https://docs.google.com/spreadsheets/d/e/2PACX-1vRWkjhMGbmqFTQiTkS9fYH0T9jydBhPGKkBWE-XVrgbNwHn0tgWc9E42NsPFYqaRQ/pub?gid=309868205&single=true&output=csv"
+                        ),
+                    fetch("base/s_22mr22.json").then(data => data.json())
+                ]).then(data => {
+                    const [sprData, mapData] = data;
+                    mainData.sprData.push(...sprData);
+                    map.getSource("states").setData(mapData);
 
-                const filtersArray = []
-                sprData
-                    .filter(d => !isNaN(+d['Capacity']) && +d['Capacity'] > 0)
-                    .map(d => {
-                        const filter = [
-                            ['==', ['get', "STATE"], d.State], myColor(+d['Capacity'])
-                        ]
-                        filtersArray.push(...filter)
-                    })
-                map.setPaintProperty(layerName, "fill-color", [
-                    'case',
-                    ...filtersArray,
-                    "transparent"
-                ])
-                map.setPaintProperty(layerName, "fill-opacity", 0.9)
-                //map.setPaintProperty(layerName, "fill-outline-color", "white")
-                //map.setPaintProperty(layerName, "fill-outline-color", "transparent")
-            })
-
-            map.on("click", layerName, e => {
-                const stateISO = e.features[0].properties.STATE;
-                const stateName = e.features[0].properties.NAME;
-
-                // Filter data for the selected state
-                const projects = mainData.sprData.filter(spr => spr.State === stateISO);
-
-                // Sum total capacity
-                const totalCapacity = projects.reduce((acc, spr) => acc + +spr['Capacity'], 0);
-                const formattedCapacity = totalCapacity.toLocaleString('en-US', {
-                    maximumFractionDigits: 0
-                });
-
-                // Construct the project list HTML
-                let projectListHTML = '';
-                projects.forEach(project => {
-                    const formattedProjectCapacity = (+project.Capacity).toLocaleString(
-                        'en-US', {
-                            maximumFractionDigits: 0
+                    const filtersArray = [];
+                    sprData
+                        .filter(d => !isNaN(+d['Capacity']) && +d['Capacity'] > 0)
+                        .forEach(d => {
+                            const color = getColorForCapacity(+d['Capacity']);
+                            const filter = [
+                                ['==', ['get', "STATE"], d.State], color
+                            ];
+                            filtersArray.push(...filter);
                         });
 
-                    projectListHTML +=
-                        `<li>
+                    map.setPaintProperty(layerName, "fill-color", [
+                        'case',
+                        ...filtersArray,
+                        "transparent"
+                    ]);
+
+                    map.setPaintProperty(layerName, "fill-opacity", 0.9);
+
+                    generateLegend(legendDiv); // Pass the legend div for manual bins
+                });
+
+                map.on("click", layerName, e => {
+                    const stateISO = e.features[0].properties.STATE;
+                    const stateName = e.features[0].properties.NAME;
+
+                    // Filter data for the selected state
+                    const projects = mainData.sprData.filter(spr => spr.State === stateISO);
+
+                    // Sum total capacity
+                    const totalCapacity = projects.reduce((acc, spr) => acc + +spr['Capacity'],
+                        0);
+                    const formattedCapacity = totalCapacity.toLocaleString('en-US', {
+                        maximumFractionDigits: 0
+                    });
+
+                    // Construct the project list HTML
+                    let projectListHTML = '';
+                    projects.forEach(project => {
+                        const formattedProjectCapacity = (+project.Capacity)
+                            .toLocaleString('en-US', {
+                                maximumFractionDigits: 0
+                            });
+
+                        projectListHTML +=
+                            `<li>
                 <span class="proj-name">${project.ProjectName} (${formattedProjectCapacity} kW)</span><br>
                 <span class="proj-loc">
                     <img class="icon" src="images/LocationIcon.png" alt="Location:" /> ${project.City}, ${project.State}
                 </span>
             </li>`;
-                });
+                    });
 
-                const text = projects.length > 0 ? `
+                    const text = projects.length > 0 ? `
         <div class="popup-main">
             <div class="popup-header"><b>${stateName}</b></div>
             <div class="popup-subheader">Total Capacity: ${formattedCapacity} kW</div>
@@ -162,21 +161,25 @@
             <div>No projects</div>
         </div>`;
 
-                map.flyTo({
-                    center: e.lngLat,
-                    zoom: map.getZoom(),
-                    speed: 1.2 // Optional: Control the speed of the fly effect
+                    // Center the map on the popup
+                    map.flyTo({
+                        center: e.lngLat,
+                        zoom: map.getZoom(),
+                        speed: 1.2 // Smooth transition
+                    });
+
+                    // Create a new popup at the clicked location with the aggregated content
+                    new mapboxgl.Popup({
+                            anchor: 'top-left'
+                        }) // Set the popup anchor to top-left
+                        .setLngLat(e.lngLat)
+                        .setHTML(text)
+                        .addTo(map);
                 });
 
-
-                // Create a new popup at the clicked location with the aggregated content
-                new mapboxgl.Popup({
-                        anchor: 'top-left'
-                    })
-                    .setLngLat(e.lngLat)
-                    .setHTML(text)
-                    .addTo(map);
+                // Your other existing code...
             });
+
 
 
             let hoveredStateId = null; // Variable to store the ID of the hovered state
