@@ -153,7 +153,6 @@ h4 {
 
 .popup-project-list li {
     list-style-type: none; /* Removes default list styling */
-    border-bottom: 1px solid #eee; /* Light line between items */
     padding: 0; /* Removes padding */
     margin-top: 10px; /* Space above the list */
 }
@@ -162,6 +161,7 @@ h4 {
     font-family: 'Roboto';
     padding: 5px 0; /* Padding for each list item */
     font-size: 14px; /* Font size for list items */
+    margin-bottom: 10px; /* Space below */
     color: #1b64fe; /* Blue color for text */
 }
 
