@@ -144,9 +144,9 @@
 
                     projectListHTML +=
                         `<li>
-                <span class="proj-name">${project.ProjectName} </span><br>
+                <span class="proj-name">${project.ProjectName} (${formattedProjectCapacity} kW)</span><br>
                 <span class="proj-loc">
-                    <img class="icon" src="images/LocationIcon.png" alt="Location:" /> ${project.City}, ${project.State} (${formattedProjectCapacity} kW)
+                    <img class="icon" src="images/LocationIcon.png" alt="Location:" /> ${project.City}, ${project.State}
                 </span>
             </li>`;
                 });
