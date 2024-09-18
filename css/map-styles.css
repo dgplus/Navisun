@@ -136,9 +136,6 @@ h4 {
     margin-bottom: 10px; /* Space below the header */
 }
 
-.popup-main {
-}
-
 .popup-project-list {
     list-style-type: none; /* Removes default list styling */
     padding: 0; /* Removes padding */
