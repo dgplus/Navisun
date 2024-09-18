@@ -137,14 +137,18 @@
                 // Construct the project list HTML
                 let projectListHTML = '';
                 projects.forEach(project => {
+                    const formattedProjectCapacity = (+project.Capacity).toLocaleString(
+                    'en-US', {
+                        maximumFractionDigits: 0
+                    });
+
                     projectListHTML +=
                         `<li>
-                            <span class="proj-name">${project.ProjectName} (${project.Capacity} kW)</span><br>
-                            <span class="proj-loc">
-                                <img class="icon" src="images/LocationIcon.png"
-                            alt="Location:" /> ${project.City}, ${project.State}
-                            </span>
-                        </li>`;
+                <span class="proj-name">${project.ProjectName} (${formattedProjectCapacity} kW)</span><br>
+                <span class="proj-loc">
+                    <img class="icon" src="images/LocationIcon.png" alt="Location:" /> ${project.City}, ${project.State}
+                </span>
+            </li>`;
                 });
 
                 const text = projects.length > 0 ? `
