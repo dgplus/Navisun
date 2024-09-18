@@ -158,6 +158,22 @@
                     .addTo(map);
             });
 
+            map.on('mouseenter', layerName, (e) => {
+                map.setPaintProperty(layerName, 'fill-opacity', [
+                    'case',
+                    ['==', ['get', 'STATE'], e.features[0].properties.STATE],
+                    0.5, // Set the opacity to 0.5 on hover
+                    0.9 // Set the default opacity to 0.9
+                ]);
+                map.getCanvas().style.cursor = 'pointer';
+            });
+
+            map.on('mouseleave', layerName, (e) => {
+                map.setPaintProperty(layerName, 'fill-opacity', 0.9); // Reset to original opacity
+                map.getCanvas().style.cursor = '';
+            });
+
+
 
             map.on('mouseenter', layerName, () => {
                 map.getCanvas().style.cursor = 'pointer';
