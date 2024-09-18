@@ -214,9 +214,6 @@
                 }
             });
 
-
-
-
             map.on('mouseenter', layerName, () => {
                 map.getCanvas().style.cursor = 'pointer';
             });
@@ -225,21 +222,6 @@
             map.on('mouseleave', layerName, () => {
                 map.getCanvas().style.cursor = '';
             });
-
-            // bordersCheckbox.addEventListener('input', (e) => {
-            //     const val = bordersCheckbox.checked ? "white" : "transparent"
-            //     map.setPaintProperty(layerName, "fill-outline-color", val)
-            // })
-
-            // slider.addEventListener('input', (e) => {
-            //     map.setPaintProperty(
-            //         layerName,
-            //         'fill-opacity',
-            //         parseInt(e.target.value, 10) / 100
-            //     );
-            //     // Value indicator
-            //     sliderValue.textContent = e.target.value + '%';
-            // });
 
         });
 
@@ -255,8 +237,6 @@
                 document.exitFullscreen();
             }
         }
-
-
 
         function generateLegend(min, max, legendDiv, colorFunc) {
 
@@ -294,6 +274,21 @@
             if (!str) return "";
             return str.replaceAll(/[\,\.]/g, " ").replace(/[\s]{2,}/, " ").trim().toLowerCase()
         }
+
+           // bordersCheckbox.addEventListener('input', (e) => {
+            //     const val = bordersCheckbox.checked ? "white" : "transparent"
+            //     map.setPaintProperty(layerName, "fill-outline-color", val)
+            // })
+
+            // slider.addEventListener('input', (e) => {
+            //     map.setPaintProperty(
+            //         layerName,
+            //         'fill-opacity',
+            //         parseInt(e.target.value, 10) / 100
+            //     );
+            //     // Value indicator
+            //     sliderValue.textContent = e.target.value + '%';
+            // });
     </script>
 
 </body>
