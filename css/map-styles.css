@@ -14,7 +14,7 @@ body {
     margin: 5px;
 }
 .mapboxgl-map {
-    font: normal 13px/20px 'Open Sans' !important;
+    font: normal 13px/20px 'Roboto' !important;
 }
 .map-overlay {
     position: absolute;
