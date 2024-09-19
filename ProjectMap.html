@@ -126,7 +126,7 @@
 
 
 
-                generateLegend(min, max, legendDiv, colorFunc)
+                generateLegend(min, max, legendDiv, myColor)
    
                 // Assign colors to states based on total capacity
                 const filtersArray = [];
@@ -289,9 +289,9 @@
         }
 
         // Generate the legend with 10,000 kW bins based on total state capacity
-        function generateLegend(min, max, legendDiv, colorFunc) {
+        function generateLegend(min, max, legendDiv, myColor) {
             const step = 10000; // Fixed 10,000 kW increments
-            const bins = colorFunc.domain(); // Use the thresholds from the color scale for the legend
+            const bins = myColor.domain(); // Use the thresholds from the color scale for the legend
 
             bins.forEach((threshold, i) => {
                 const startVal = i === 0 ? 0 : bins[i - 1]; // Start value is either 0 or the previous threshold
@@ -305,7 +305,7 @@
                 // Create square for the legend color
                 const sq = document.createElement("div");
                 sq.className = "square";
-                sq.style.backgroundColor = colorFunc(endVal);
+                sq.style.backgroundColor = myColor(endVal);
                 sq.style.opacity = 0.9;
 
                 // Append color square and text to legend
@@ -325,7 +325,7 @@
 
             const finalSq = document.createElement("div");
             finalSq.className = "square";
-            finalSq.style.backgroundColor = colorFunc(max);
+            finalSq.style.backgroundColor = myColor(max);
             finalSq.style.opacity = 0.9;
 
             const finalDiv = document.createElement("div");
