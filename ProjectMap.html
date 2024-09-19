@@ -289,10 +289,11 @@
             bins.forEach((color, i) => {
                 const binStart = colorFunc.invertExtent(color)[0];
                 const binEnd = colorFunc.invertExtent(color)[1];
+
                 const text = document.createElement("div");
                 text.className = "square-text";
                 text.innerText =
-                    `${Math.floor(binStart).toLocaleString()} - ${Math.floor(binEnd).toLocaleString()}`;
+                    `${Math.floor(binStart).toLocaleString()} - ${Math.floor(binEnd).toLocaleString()} kW`; // Label total capacities
 
                 const sq = document.createElement("div");
                 sq.className = "square";
@@ -307,6 +308,7 @@
                 legendDiv.appendChild(div);
             });
         }
+
 
 
         function clear(str) {
