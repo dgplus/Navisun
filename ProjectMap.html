@@ -98,32 +98,53 @@
                 const namesSpr = sprData.map(d => d.State)
                 const min = Math.min(...avrPrice)
                 const max = Math.max(...avrPrice)
+
+
+                // Calculate total capacity per state
+                const stateTotals = {};
+                sprData.forEach(d => {
+                    const state = d.State;
+                    const capacity = +d['Capacity'];
+
+                    if (!stateTotals[state]) {
+                        stateTotals[state] = 0;
+                    }
+                    stateTotals[state] += capacity; // Sum the total capacity for each state
+                });
+
+                // Get the min and max of total capacities
+                const capacities = Object.values(stateTotals);
+                const minCapacity = Math.min(...capacities);
+                const maxCapacity = Math.max(...capacities);
+
+                // Create a color scale based on total state capacities
                 const myColor = d3.scaleQuantize()
-                    .domain([min, max])
-                    .range(["#dbeefc", "#a4c0fe", "#5f88fc",
-                    "#003e99"]); // More color stops for better binning
+                    .domain([minCapacity, maxCapacity])
+                    .range(["#dbeefc", "#a4c0fe", "#5f88fc", "#003e99"]); // Adjust colors as needed
+
 
 
                 generateLegend(min, max, legendDiv, myColor)
 
-                const filtersArray = []
-                sprData
-                    .filter(d => !isNaN(+d['Capacity']) && +d['Capacity'] > 0)
-                    .map(d => {
-                        const filter = [
-                            ['==', ['get', "STATE"], d.State], myColor(+d['Capacity'])
-                        ]
-                        filtersArray.push(...filter)
-                    })
+                const filtersArray = [];
+                Object.keys(stateTotals).forEach(state => {
+                    const totalCapacity = stateTotals[state];
+                    const filter = [
+                        ['==', ['get', "STATE"], state], myColor(totalCapacity)
+                    ];
+                    filtersArray.push(...filter);
+                });
+
                 map.setPaintProperty(layerName, "fill-color", [
                     'case',
                     ...filtersArray,
                     "transparent"
-                ])
+                ]);
+
                 map.setPaintProperty(layerName, "fill-opacity", 0.9)
                 //map.setPaintProperty(layerName, "fill-outline-color", "white")
                 //map.setPaintProperty(layerName, "fill-outline-color", "transparent")
-            })
+            });
 
             map.on("click", layerName, e => {
                 const stateISO = e.features[0].properties.STATE;
