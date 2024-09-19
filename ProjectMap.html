@@ -98,7 +98,11 @@
                 const namesSpr = sprData.map(d => d.State)
                 const min = Math.min(...avrPrice)
                 const max = Math.max(...avrPrice)
-                const myColor = d3.scaleLinear().domain([min, max]).range(["#dbeefc", "#a4c0fe"])
+                const myColor = d3.scaleQuantize()
+                    .domain([min, max])
+                    .range(["#dbeefc", "#a4c0fe", "#5f88fc",
+                    "#003e99"]); // More color stops for better binning
+
 
                 generateLegend(min, max, legendDiv, myColor)
 
@@ -260,41 +264,29 @@
         }
 
         function generateLegend(min, max, legendDiv, colorFunc) {
-
-            console.log('min,max', min, max);
-            const step = 3000
-            const stepCount = Math.ceil(max / 3000)
-            const divs = [...Array(stepCount).keys()].map((d, key) => {
-
-                console.log('key', key, stepCount, (step * key) + step / 2);
-                const val = (1 + step * key).toFixed()
-                const div = document.createElement("div")
-                div.className = "square-container"
-
+            const bins = colorFunc.range(); // Get the color stops
+            bins.forEach((color, i) => {
+                const binStart = colorFunc.invertExtent(color)[0];
+                const binEnd = colorFunc.invertExtent(color)[1];
                 const text = document.createElement("div");
                 text.className = "square-text";
-                const startVal = (step * (key + 1)) > max ? val : step * key + 1;
-                const endVal = (step * (key + 1)) > max ? max : step * (key + 1);
+                text.innerText =
+                    `${Math.floor(binStart).toLocaleString()} - ${Math.floor(binEnd).toLocaleString()}`;
 
-                // Add commas to the start and end values using toLocaleString
-                text.innerText = (step * (key + 1)) > max ?
-                    `${startVal.toLocaleString('en-US')} +` :
-                    `${startVal.toLocaleString('en-US')} - ${endVal.toLocaleString('en-US')}`;
+                const sq = document.createElement("div");
+                sq.className = "square";
+                sq.style.backgroundColor = color;
+                sq.style.opacity = 0.9;
 
-                const sq = document.createElement("div")
-                sq.className = "square"
-                sq.style.backgroundColor = (key + 1) === stepCount ? colorFunc(max) : colorFunc((step * key) +
-                    step / 2) //if it is the last square, use max value
-                sq.style.opacity = 0.9
+                const div = document.createElement("div");
+                div.className = "square-container";
+                div.appendChild(sq);
+                div.appendChild(text);
 
-                div.appendChild(sq)
-                div.appendChild(text)
-
-                legendDiv.appendChild(div)
-                return div
-            })
-
+                legendDiv.appendChild(div);
+            });
         }
+
 
         function clear(str) {
             // console.log('str', str);
