@@ -288,15 +288,14 @@
             }
         }
 
-        function generateLegend(min, max, legendDiv, colorFunc) {
+        function generateLegend(min, maxCapacity, legendDiv, colorFunc) {
             const step = 10000; // Fixed 10,000 kW increments
-            const stepCount = Math.ceil(max / step); // Number of steps based on max capacity
+            const stepCount = Math.ceil(maxCapacity / step); // Number of steps based on max capacity
             const bins = colorFunc.range(); // Get the color stops
 
             bins.forEach((color, i) => {
                 const startVal = step * i;
-                const endVal = step * (i + 1) > max ? max : step * (i +
-                    1); // Ensure last bin doesn't exceed max
+                const endVal = step * (i + 1) > maxCapacity ? maxCapacity : step * (i + 1); // Ensure last bin doesn't exceed max
 
                 const text = document.createElement("div");
                 text.className = "square-text";
