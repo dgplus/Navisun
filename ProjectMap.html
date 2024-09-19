@@ -108,7 +108,7 @@
                 const maxCapacity = Math.max(...capacities);
 
                 // Create a color scale with 10,000 kW increments based on total state capacity
-                const thresholds = d3.range(10000, maxCapacity,
+                const thresholds = d3.range(10000, maxCapacity + 10000,
                     10000); // Start at 10,000 and step by 10,000
                 const myColor = d3.scaleThreshold()
                     .domain(thresholds)
