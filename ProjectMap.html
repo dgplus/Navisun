@@ -117,18 +117,18 @@
                 const minCapacity = Math.min(...capacities);
                 const maxCapacity = Math.max(...capacities);
 
-                // Define thresholds (10,000 kW increments) and corresponding colors
-                const thresholds = d3.range(0, maxCapacity,
-                    10000); // Generates thresholds [0, 10000, 20000, ..., maxCapacity]
+                // Create a color scale with 10,000 kW increments based on total state capacity
+                const thresholds = d3.range(10000, maxCapacity,
+                    10000); // Start at 10,000 and step by 10,000
                 const myColor = d3.scaleThreshold()
-                    .domain(thresholds) // Set domain based on the 10,000 kW steps
-                    .range(["#dbeefc", "#a4c0fe", "#5f88fc", "#003e99"]); // Adjust colors as needed
+                    .domain(thresholds)
+                    .range(["#dbeefc", "#a4c0fe", "#5f88fc", "#003e99"]); // Adjust colors if necessary
 
 
 
-
-                generateLegend(min, max, legendDiv, myColor)
-
+                generateLegend(min, max, legendDiv, colorFunc)
+   
+                // Assign colors to states based on total capacity
                 const filtersArray = [];
                 Object.keys(stateTotals).forEach(state => {
                     const totalCapacity = stateTotals[state];
@@ -288,24 +288,27 @@
             }
         }
 
-        function generateLegend(min, maxCapacity, legendDiv, colorFunc) {
+        // Generate the legend with 10,000 kW bins based on total state capacity
+        function generateLegend(min, max, legendDiv, colorFunc) {
             const step = 10000; // Fixed 10,000 kW increments
-            const stepCount = Math.ceil(maxCapacity / step); // Number of steps based on max capacity
-            const bins = colorFunc.range(); // Get the color stops
+            const bins = colorFunc.domain(); // Use the thresholds from the color scale for the legend
 
-            bins.forEach((color, i) => {
-                const startVal = step * i;
-                const endVal = step * (i + 1) > maxCapacity ? maxCapacity : step * (i + 1); // Ensure last bin doesn't exceed max
+            bins.forEach((threshold, i) => {
+                const startVal = i === 0 ? 0 : bins[i - 1]; // Start value is either 0 or the previous threshold
+                const endVal = threshold; // End value is the current threshold
 
+                // Create legend label with state total capacity ranges
                 const text = document.createElement("div");
                 text.className = "square-text";
                 text.innerText = `${startVal.toLocaleString()} - ${endVal.toLocaleString()} kW`;
 
+                // Create square for the legend color
                 const sq = document.createElement("div");
                 sq.className = "square";
-                sq.style.backgroundColor = color;
+                sq.style.backgroundColor = colorFunc(endVal);
                 sq.style.opacity = 0.9;
 
+                // Append color square and text to legend
                 const div = document.createElement("div");
                 div.className = "square-container";
                 div.appendChild(sq);
@@ -313,6 +316,24 @@
 
                 legendDiv.appendChild(div);
             });
+
+            // Add a final legend entry for values greater than the last threshold
+            const finalThreshold = bins[bins.length - 1];
+            const finalText = document.createElement("div");
+            finalText.className = "square-text";
+            finalText.innerText = `${finalThreshold.toLocaleString()}+ kW`;
+
+            const finalSq = document.createElement("div");
+            finalSq.className = "square";
+            finalSq.style.backgroundColor = colorFunc(max);
+            finalSq.style.opacity = 0.9;
+
+            const finalDiv = document.createElement("div");
+            finalDiv.className = "square-container";
+            finalDiv.appendChild(finalSq);
+            finalDiv.appendChild(finalText);
+
+            legendDiv.appendChild(finalDiv);
         }
 
 
