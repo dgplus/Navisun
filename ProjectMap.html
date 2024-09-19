@@ -11,20 +11,19 @@
     <script src="https://d3js.org/d3.v7.min.js"></script>
     <link href="https://fonts.googleapis.com/css?family=Open+Sans:400,600,300" rel="stylesheet" type="text/css">
     <link
-        href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900&display=swap"
         rel="stylesheet">
     <link rel="stylesheet" href="css/map-styles.css">
 </head>
 
 <body>
     <div id="mapcontainer">
-        <div id="map"></div>
+        <div id="map" style="width: 100%; height: 500px;"></div>
         <div class="map-overlay top">
             <div class="map-overlay-inner">
                 <h3>NaviSun Project Capacity</h3>
                 <h4>Kilowatts (kW)</h4>
                 <div class="legend-container">
-
                     <div id="legend" class="column"></div>
                 </div>
             </div>
@@ -40,8 +39,7 @@
             sprData: []
         }
 
-        mapboxgl.accessToken =
-            'pk.eyJ1IjoiZGdwbHVzZGVzaWduIiwiYSI6ImNsZTF2bGtuczFwYXYzcnBrYm5xM2VwZHUifQ.bsWl7gNOVYm4-_62gDEjqA';
+        mapboxgl.accessToken = 'pk.eyJ1IjoiZGdwbHVzZGVzaWduIiwiYSI6ImNsZTF2bGtuczFwYXYzcnBrYm5xM2VwZHUifQ.bsWl7gNOVYm4-_62gDEjqA';
         const map = new mapboxgl.Map({
             container: 'map',
             style: 'mapbox://styles/mapbox/light-v11',
@@ -54,7 +52,6 @@
         });
 
         map.on('load', () => {
-
             map.addSource('states', {
                 'type': 'geojson',
                 'data': {
@@ -72,23 +69,15 @@
                 }
             });
 
-
             Promise.all([
                 d3.csv(
                     "https://docs.google.com/spreadsheets/d/e/2PACX-1vRWkjhMGbmqFTQiTkS9fYH0T9jydBhPGKkBWE-XVrgbNwHn0tgWc9E42NsPFYqaRQ/pub?gid=309868205&single=true&output=csv"
                 ),
                 fetch("base/s_22mr22.json").then(data => data.json())
             ]).then(data => {
-
-                console.log('data', data);
-                const [sprData, mapData] = data
-                mainData.sprData.push(...sprData)
-                map.getSource("states").setData(mapData)
-                const avrPrice = sprData.map(d => +d['Capacity']).filter(d => !isNaN(d))
-                const namesSpr = sprData.map(d => d.State)
-                const min = Math.min(...avrPrice)
-                const max = Math.max(...avrPrice)
-
+                const [sprData, mapData] = data;
+                mainData.sprData.push(...sprData);
+                map.getSource("states").setData(mapData);
 
                 // Calculate total capacity per state
                 const stateTotals = {};
@@ -99,7 +88,7 @@
                     if (!stateTotals[state]) {
                         stateTotals[state] = 0;
                     }
-                    stateTotals[state] += capacity; // Sum the total capacity for each state
+                    stateTotals[state] += capacity;
                 });
 
                 // Get the min and max of total capacities
@@ -107,198 +96,43 @@
                 const minCapacity = Math.min(...capacities);
                 const maxCapacity = Math.max(...capacities);
 
-                // Create a color scale with 10,000 kW increments based on total state capacity
-                const thresholds = d3.range(10000, maxCapacity,
-                    10000); // Start at 10,000 and step by 10,000
+                // Include 0 as the first threshold
+                const thresholds = [0, ...d3.range(10000, maxCapacity, 10000)];
                 const myColor = d3.scaleThreshold()
                     .domain(thresholds)
-                    .range(["#dbeefc", "#adcdfc", "#9abffc", "#8ab4fc", "#6fa1fc", "#1b64fe"]); // Adjust colors if necessary
+                    .range(["#dbeefc", "#adcdfc", "#9abffc", "#8ab4fc", "#6fa1fc", "#1b64fe", "#003d99"]); // Add extra colors if needed
 
+                generateLegend(minCapacity, maxCapacity, legendDiv, myColor);
 
-
-                generateLegend(min, max, legendDiv, myColor)
-   
                 // Assign colors to states based on total capacity
                 const filtersArray = [];
                 Object.keys(stateTotals).forEach(state => {
                     const totalCapacity = stateTotals[state];
-                    const filter = [
-                        ['==', ['get', "STATE"], state], myColor(totalCapacity)
-                    ];
-                    filtersArray.push(...filter);
+                    filtersArray.push(['==', ['get', "STATE"], state], myColor(totalCapacity));
                 });
 
-                map.setPaintProperty(layerName, "fill-color", [
-                    'case',
-                    ...filtersArray,
-                    "transparent"
-                ]);
-
-
-                map.setPaintProperty(layerName, "fill-opacity", 0.9)
-                //map.setPaintProperty(layerName, "fill-outline-color", "white")
-                //map.setPaintProperty(layerName, "fill-outline-color", "transparent")
+                map.setPaintProperty(layerName, "fill-color", ['case', ...filtersArray, "transparent"]);
+                map.setPaintProperty(layerName, "fill-opacity", 0.9);
             });
-
-            map.on("click", layerName, e => {
-                const stateISO = e.features[0].properties.STATE;
-                const stateName = e.features[0].properties.NAME;
-
-                // Filter data for the selected state
-                const projects = mainData.sprData.filter(spr => spr.State === stateISO);
-
-                // Sum total capacity
-                const totalCapacity = projects.reduce((acc, spr) => acc + +spr['Capacity'], 0);
-                const formattedCapacity = totalCapacity.toLocaleString('en-US', {
-                    maximumFractionDigits: 0
-                });
-
-                // Construct the project list HTML
-                let projectListHTML = '';
-                projects.forEach(project => {
-                    const formattedProjectCapacity = (+project.Capacity).toLocaleString(
-                        'en-US', {
-                            maximumFractionDigits: 0
-                        });
-
-                    projectListHTML +=
-                        `<li>
-                <span class="proj-name">${project.ProjectName} (${formattedProjectCapacity} kW)</span><br>
-                <span class="proj-loc">
-                    <img class="icon" src="images/LocationIcon.png" alt="Location:" /> ${project.City}, ${project.State}
-                </span>
-            </li>`;
-                });
-
-                const text = projects.length > 0 ? `
-        <div class="popup-main">
-            <div class="popup-header"><b>${stateName}</b></div>
-            <div class="popup-subheader">Total Capacity: ${formattedCapacity} kW</div>
-            <ul class="popup-project-list">${projectListHTML}</ul>
-        </div>` : `
-        <div class="popup-main">
-            <div class="popup-header"><b>${stateName}</b></div>
-            <div class="popup-subheader">No projects</div>
-        </div>`;
-
-                map.flyTo({
-                    center: e.lngLat,
-                    zoom: map.getZoom(),
-                    speed: 1.2 // Optional: Control the speed of the fly effect
-                });
-
-
-                // Create a new popup at the clicked location with the aggregated content
-                new mapboxgl.Popup({
-                        anchor: 'top-left'
-                    }) // Set the popup anchor to top-left
-                    .setLngLat(e.lngLat)
-                    .setHTML(text)
-                    .addTo(map);
-
-            });
-
-            let hoveredStateId = null; // Variable to store the ID of the hovered state
-
-            map.on('mouseenter', layerName, (e) => {
-                if (e.features.length > 0) {
-                    if (hoveredStateId !== null) {
-                        // Reset the previously hovered state to the default opacity
-                        map.setFeatureState({
-                            source: 'states',
-                            id: hoveredStateId
-                        }, {
-                            hover: false
-                        });
-                    }
-                    // Get the ID of the currently hovered state and change its opacity
-                    hoveredStateId = e.features[0].id;
-                    map.setFeatureState({
-                        source: 'states',
-                        id: hoveredStateId
-                    }, {
-                        hover: true
-                    });
-                }
-                map.getCanvas().style.cursor = 'pointer';
-            });
-
-            map.on('mouseleave', layerName, (e) => {
-                if (hoveredStateId !== null) {
-                    // Reset the hovered state when the mouse leaves
-                    map.setFeatureState({
-                        source: 'states',
-                        id: hoveredStateId
-                    }, {
-                        hover: false
-                    });
-                    hoveredStateId = null; // Reset the hover ID
-                }
-                map.getCanvas().style.cursor = '';
-            });
-
-            // Add this layer's feature state to handle fill-opacity on hover
-            map.addLayer({
-                'id': 'states-layer',
-                'type': 'fill',
-                'source': 'states',
-                'paint': {
-                    'fill-color': 'rgba(200, 100, 240, 0.8)', // Default color
-                    'fill-outline-color': 'rgba(255, 255, 255, .5)',
-                    'fill-opacity': [
-                        'case',
-                        ['boolean', ['feature-state', 'hover'], false],
-                        1, // Hover opacity
-                        0.9 // Default opacity
-                    ]
-                }
-            });
-
-            map.on('mouseenter', layerName, () => {
-                map.getCanvas().style.cursor = 'pointer';
-            });
-
-            // Change it back to a pointer when it leaves.
-            map.on('mouseleave', layerName, () => {
-                map.getCanvas().style.cursor = '';
-            });
-
         });
-
-        fullscreen.addEventListener('click', toggleFullscreen)
-
-        function toggleFullscreen() {
-            let elem = document.getElementById("mapcontainer");
-            if (!document.fullscreenElement) {
-                elem.requestFullscreen().catch((err) => {
-                    alert(`Error attempting to enable fullscreen mode: ${err.message} (${err.name})`);
-                });
-            } else {
-                document.exitFullscreen();
-            }
-        }
 
         // Generate the legend with 10,000 kW bins based on total state capacity
         function generateLegend(min, max, legendDiv, myColor) {
-            const step = 10000; // Fixed 10,000 kW increments
             const bins = myColor.domain(); // Use the thresholds from the color scale for the legend
 
             bins.forEach((threshold, i) => {
-                const startVal = i === 0 ? 0 : bins[i - 1]; // Start value is either 0 or the previous threshold
-                const endVal = threshold; // End value is the current threshold
+                const startVal = i === 0 ? 0 : bins[i - 1];
+                const endVal = threshold;
 
-                // Create legend label with state total capacity ranges
                 const text = document.createElement("div");
                 text.className = "square-text";
                 text.innerText = `${startVal.toLocaleString()} - ${endVal.toLocaleString()} kW`;
 
-                // Create square for the legend color
                 const sq = document.createElement("div");
                 sq.className = "square";
                 sq.style.backgroundColor = myColor(endVal);
                 sq.style.opacity = 0.9;
 
-                // Append color square and text to legend
                 const div = document.createElement("div");
                 div.className = "square-container";
                 div.appendChild(sq);
@@ -315,7 +149,7 @@
 
             const finalSq = document.createElement("div");
             finalSq.className = "square";
-            finalSq.style.backgroundColor = "#1b64fe";
+            finalSq.style.backgroundColor = "#1b64fe"; // Use the last color in the range
             finalSq.style.opacity = 0.9;
 
             const finalDiv = document.createElement("div");
@@ -325,32 +159,7 @@
 
             legendDiv.appendChild(finalDiv);
         }
-
-
-
-
-        function clear(str) {
-            // console.log('str', str);
-            if (!str) return "";
-            return str.replaceAll(/[\,\.]/g, " ").replace(/[\s]{2,}/, " ").trim().toLowerCase()
-        }
-
-        // bordersCheckbox.addEventListener('input', (e) => {
-        //     const val = bordersCheckbox.checked ? "white" : "transparent"
-        //     map.setPaintProperty(layerName, "fill-outline-color", val)
-        // })
-
-        // slider.addEventListener('input', (e) => {
-        //     map.setPaintProperty(
-        //         layerName,
-        //         'fill-opacity',
-        //         parseInt(e.target.value, 10) / 100
-        //     );
-        //     // Value indicator
-        //     sliderValue.textContent = e.target.value + '%';
-        // });
     </script>
-
 </body>
 
 </html>
