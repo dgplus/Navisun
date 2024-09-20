@@ -24,7 +24,6 @@
                 <h3>NaviSun Project Capacity</h3>
                 <h4>Kilowatts (kW)</h4>
                 <div class="legend-container">
-
                     <div id="legend" class="column"></div>
                 </div>
             </div>
@@ -49,8 +48,17 @@
                 lng: -86.065541,
                 lat: 38.92230044374887
             },
-            zoom: 3.8,
-            projection: "mercator"
+            zoom: 3.49,
+            projection: "mercator",
+            //disable rotation
+            pitchWithRotate: false,
+            dragRotate: false,
+            //use bouds to restrict the map to the US
+            maxBounds: [[-126.33852913718832, 7.080547744058833], [-58.90028821152113, 66.02904795588714]]
+
+
+
+
         });
 
         map.on('load', () => {
@@ -63,14 +71,14 @@
                 }
             });
 
-            map.addLayer({
-                'id': 'states-layer',
-                'type': 'fill',
-                'source': 'states',
-                'paint': {
-                    'fill-outline-color': 'rgba(255, 255, 255, .5)'
-                }
-            });
+            // map.addLayer({
+            //     'id': 'states-layer',
+            //     'type': 'fill',
+            //     'source': 'states',
+            //     'paint': {
+            //         'fill-outline-color': 'rgba(255, 255, 255, .5)'
+            //     }
+            // });
 
 
             Promise.all([
@@ -114,15 +122,13 @@
                     .domain(thresholds)
                     .range(["#dbeefc", "#adcdfc", "#a2c5fc", "#9abffc", "#8ab4fc", "#6fa1fc"]); // Adjust colors if necessary
 
-
-
                 generateLegend(min, max, legendDiv, myColor)
-   
+
                 // Assign colors to states based on total capacity
                 const filtersArray = [];
                 Object.keys(stateTotals).forEach(state => {
                     const totalCapacity = stateTotals[state];
-                    const color = myColor(totalCapacity); 
+                    const color = totalCapacity > 50000 ? "#1b64fe" : myColor(totalCapacity);//for the states with capacity greater than 50,000 kW, color them blue
                     const filter = [
                         ['==', ['get', "STATE"], state], color
                     ];
@@ -134,9 +140,8 @@
                     ...filtersArray,
                     "transparent"
                 ]);
-
-
                 map.setPaintProperty(layerName, "fill-opacity", 0.9)
+
                 //map.setPaintProperty(layerName, "fill-outline-color", "white")
                 //map.setPaintProperty(layerName, "fill-outline-color", "transparent")
             });
@@ -159,28 +164,28 @@
                 projects.forEach(project => {
                     const formattedProjectCapacity = (+project.Capacity).toLocaleString(
                         'en-US', {
-                            maximumFractionDigits: 0
-                        });
+                        maximumFractionDigits: 0
+                    });
 
                     projectListHTML +=
                         `<li>
-                <span class="proj-name">${project.ProjectName} (${formattedProjectCapacity} kW)</span><br>
-                <span class="proj-loc">
-                    <img class="icon" src="images/LocationIcon.png" alt="Location:" /> ${project.City}, ${project.State}
-                </span>
-            </li>`;
+                            <span class="proj-name">${project.ProjectName} (${formattedProjectCapacity} kW)</span><br>
+                            <span class="proj-loc">
+                                <img class="icon" src="images/LocationIcon.png" alt="Location:" /> ${project.City}, ${project.State}
+                            </span>
+                        </li>`;
                 });
 
                 const text = projects.length > 0 ? `
-        <div class="popup-main">
-            <div class="popup-header"><b>${stateName}</b></div>
-            <div class="popup-subheader">Total Capacity: ${formattedCapacity} kW</div>
-            <ul class="popup-project-list">${projectListHTML}</ul>
-        </div>` : `
-        <div class="popup-main">
-            <div class="popup-header"><b>${stateName}</b></div>
-            <div class="popup-subheader">No projects</div>
-        </div>`;
+                    <div class="popup-main">
+                        <div class="popup-header"><b>${stateName}</b></div>
+                        <div class="popup-subheader">Total Capacity: ${formattedCapacity} kW</div>
+                        <ul class="popup-project-list">${projectListHTML}</ul>
+                    </div>` : `
+                    <div class="popup-main">
+                        <div class="popup-header"><b>${stateName}</b></div>
+                        <div class="popup-subheader">No projects</div>
+                    </div>`;
 
                 map.flyTo({
                     center: e.lngLat,
@@ -191,8 +196,8 @@
 
                 // Create a new popup at the clicked location with the aggregated content
                 new mapboxgl.Popup({
-                        anchor: 'top-left'
-                    }) // Set the popup anchor to top-left
+                    anchor: 'top-left'
+                }) // Set the popup anchor to top-left
                     .setLngLat(e.lngLat)
                     .setHTML(text)
                     .addTo(map);
@@ -213,13 +218,13 @@
                         });
                     }
                     // Get the ID of the currently hovered state and change its opacity
-                    hoveredStateId = e.features[0].id;
-                    map.setFeatureState({
-                        source: 'states',
-                        id: hoveredStateId
-                    }, {
-                        hover: true
-                    });
+                    // hoveredStateId = e.features[0].id;
+                    // map.setFeatureState({
+                    //     source: 'states',
+                    //     id: hoveredStateId
+                    // }, {
+                    //     hover: true
+                    // });
                 }
                 map.getCanvas().style.cursor = 'pointer';
             });
@@ -246,12 +251,13 @@
                 'paint': {
                     'fill-color': 'rgba(200, 100, 240, 0.8)', // Default color
                     'fill-outline-color': 'rgba(255, 255, 255, .5)',
-                    'fill-opacity': [
-                        'case',
-                        ['boolean', ['feature-state', 'hover'], false],
-                        1, // Hover opacity
-                        0.9 // Default opacity
-                    ]
+                    // 'fill-opacity': [
+                    //     'case',
+                    //     ['boolean', ['feature-state', 'hover'], false],
+                    //     1, // Hover opacity
+                    //     0.9 // Default opacity
+                    // ]
+                    'fill-opacity': 1
                 }
             });
 
