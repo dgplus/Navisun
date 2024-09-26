@@ -167,13 +167,20 @@
                         maximumFractionDigits: 0
                     });
 
-                    projectListHTML +=
+                    projectListHTML += project.Capacity > 0 ?
                         `<li>
                             <span class="proj-name">${project.ProjectName} (${formattedProjectCapacity} kW)</span><br>
                             <span class="proj-loc">
                                 <img class="icon" src="images/LocationIcon.png" alt="Location:" /> ${project.City}, ${project.State}
                             </span>
-                        </li>`;
+                        </li>`:
+                        `<li>
+                            <span class="proj-name" style="color: #d5d5d5">${project.ProjectName} (Late Stage Development)</span><br>
+                            <span class="proj-loc" style="color: #d5d5d5">
+                                <img class="icon" src="images/LocationIcon.png" alt="Location:" /> ${project.State}
+                            </span>
+                        </li>`
+                        ;
                 });
 
                 const text = projects.length > 0 ? `
