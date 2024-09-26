@@ -28,9 +28,13 @@ body {
     font-family: "Roboto";
     background-color: #fff;
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
-    border-radius: 3px;
     padding: 15px;
     margin-bottom: 10px;
+    color: #383838;
+    border-radius: 15px 15px 15px 15px; /* Rounded corners */
+    scrollbar-color: #f9de00;
+    border: solid 1px #f9de00; /* Yellow border */
+    border-width: medium;
 }
 .map-overlay label {
     display: inherit;
@@ -172,7 +176,7 @@ h4 {
     font-weight: 400;
     padding: 5px 0; /* Padding for each list item */
     font-size: 14px; /* Font size for list items */
-    color: black; /* Black color for text */
+    color: #383838; /* Black color for text */
     font-style: italic;
 }
 
