@@ -74,7 +74,7 @@
 
             Promise.all([
                 d3.csv(
-                    "https://docs.google.com/spreadsheets/d/e/2PACX-1vTJCZ03O9u4J4cllFGMXCFqaZYzfYA0X7IlyEsIHx1ZyiKc9wc4SwsbN44brrm-8A/pub?gid=105147582&single=true&output=csv"
+                    "https://docs.google.com/spreadsheets/d/e/2PACX-1vRWkjhMGbmqFTQiTkS9fYH0T9jydBhPGKkBWE-XVrgbNwHn0tgWc9E42NsPFYqaRQ/pub?output=csv"
                 ),
                 fetch("base/s_22mr22.json").then(data => data.json())
             ]).then(data => {
