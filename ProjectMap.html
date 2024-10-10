@@ -10,9 +10,7 @@
     <script src="https://cdn.jsdelivr.net/npm/@turf/turf@6/turf.min.js"></script>
     <script src="https://d3js.org/d3.v7.min.js"></script>
     <link href="https://fonts.googleapis.com/css?family=Open+Sans:400,600,300" rel="stylesheet" type="text/css">
-    <link
-        href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap"
-        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/map-styles.css">
 </head>
 
@@ -89,27 +87,21 @@
                 sprData.forEach(d => {
                     const state = d.State;
                     const capacity = +d['Capacity'];
-                    const stage = d['Stage'];  // Assuming you have a 'Stage' field
+                    const stage = d['Stage']; // Fixed the type to be string
 
                     if (!stateTotals[state]) {
                         stateTotals[state] = 0;
                     }
-                    stateTotals[state] += capacity; // Sum the total capacity for each state
-                });
+                    stateTotals[state] += capacity;
 
-                // Assign colors to states based on total capacity
-                const filtersArray = [];
-                Object.keys(stateTotals).forEach(state => {
-                    const totalCapacity = stateTotals[state];
-
-                    // States with capacity get the same blue color (#1B64FE)
-                      const color = stage === "Development" ? "#add8e6" : (capacity > 0 ? "#1B64FE" : "transparent");
+                    const color = stage === "Development" ? "#add8e6" : (capacity > 0 ? "#1B64FE" : "transparent");
 
                     const filter = [
                         ['==', ['get', "STATE"], state], color
                     ];
                     filtersArray.push(...filter);
                 });
+
 
                 map.setPaintProperty(layerName, "fill-color", [
                     'case',
@@ -335,6 +327,7 @@
         //     // Value indicator
         //     sliderValue.textContent = e.target.value + '%';
         // });
+
     </script>
 
 </body>
