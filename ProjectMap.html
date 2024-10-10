@@ -89,6 +89,7 @@
                 sprData.forEach(d => {
                     const state = d.State;
                     const capacity = +d['Capacity'];
+                    const stage = d['Stage'];  // Assuming you have a 'Stage' field
 
                     if (!stateTotals[state]) {
                         stateTotals[state] = 0;
@@ -102,8 +103,7 @@
                     const totalCapacity = stateTotals[state];
 
                     // States with capacity get the same blue color (#1B64FE)
-                    const color = totalCapacity > 0 ? "#1B64FE" :
-                    "transparent"; // Blue for states with capacity, transparent otherwise
+                      const color = stage === "Development" ? "#add8e6" : (capacity > 0 ? "#1B64FE" : "transparent");
 
                     const filter = [
                         ['==', ['get', "STATE"], state], color
