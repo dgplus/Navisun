@@ -130,12 +130,7 @@
                 // Construct the project list HTML
                 let projectListHTML = '';
                 projects.forEach(project => {
-                    const formattedProjectCapacity = (+project.Capacity).toLocaleString(
-                        'en-US', {
-                            maximumFractionDigits: 0
-                        });
-
-                    projectListHTML += project.Capacity > 0 ?
+                    
                         `<li>
                             <span class="proj-name">${project.ProjectName}</span><br>
                             <span class="proj-loc">
