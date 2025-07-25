@@ -122,26 +122,22 @@
                 const projects = mainData.sprData.filter(spr => spr.State === stateISO);
 
                 // Sum total capacity
-                    /*
-
                 const totalCapacity = projects.reduce((acc, spr) => acc + +spr['Capacity'], 0);
                 const formattedCapacity = totalCapacity.toLocaleString('en-US', {
                     maximumFractionDigits: 0
                 });
-*/
+
                 // Construct the project list HTML
                 let projectListHTML = '';
                 projects.forEach(project => {
-                   
-                    /*
                     const formattedProjectCapacity = (+project.Capacity).toLocaleString(
                         'en-US', {
                             maximumFractionDigits: 0
                         });
-*/
+
                     projectListHTML += project.Capacity > 0 ?
                         `<li>
-                            <span class="proj-name">${project.ProjectName} (${formattedProjectCapacity} kW)</span><br>
+                            <span class="proj-name">${project.ProjectName}</span><br>
                             <span class="proj-loc">
                                 <img class="icon" src="images/LocationIcon.png" alt="Location:" /> ${project.City}, ${project.State}
                             </span>
@@ -295,7 +291,6 @@
             const finalThreshold = bins[bins.length - 1];
             const finalText = document.createElement("div");
             finalText.className = "square-text";
-            finalText.innerText = `${finalThreshold.toLocaleString()}+ kW`;
 
             const finalSq = document.createElement("div");
             finalSq.className = "square";
